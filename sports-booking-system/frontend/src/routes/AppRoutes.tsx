@@ -38,6 +38,7 @@ import { AdminReportsPage } from "../pages/admin/AdminReportsPage";
 import { AdminStatisticsPage } from "../pages/admin/AdminStatisticsPage";
 import { AdminAuditLogsPage } from "../pages/admin/AdminAuditLogsPage";
 import { AdminBlockchainLogsPage } from "../pages/admin/AdminBlockchainLogsPage";
+import { EnterpriseAdminPortalPage } from "../pages/admin/EnterpriseAdminPortalPage";
 
 export function AppRoutes() {
   return (
@@ -105,9 +106,14 @@ export function AppRoutes() {
           <Route path="admin/reports" element={<AdminReportsPage />} />
           <Route path="admin/statistics" element={<AdminStatisticsPage />} />
           <Route path="admin/audit-logs" element={<AdminAuditLogsPage />} />
-          <Route path="admin/blockchain-logs" element={<AdminBlockchainLogsPage />} />
+          <Route path="admin/portal" element={<EnterpriseAdminPortalPage />} />
+          <Route path="admin/enterprise" element={<EnterpriseAdminPortalPage />} />
         </Route>
       </Route>
+
+      {/* Direct preview route for Enterprise Admin Portal */}
+      <Route path="admin-portal" element={<EnterpriseAdminPortalPage />} />
+      <Route path="enterprise-portal" element={<EnterpriseAdminPortalPage />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

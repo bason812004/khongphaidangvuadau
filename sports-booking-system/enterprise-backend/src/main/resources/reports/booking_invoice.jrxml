@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="booking_invoice"
+              pageWidth="595" pageHeight="842" columnWidth="555"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+              uuid="b7b848eb-1144-42b7-a367-932d56a73c11">
+
+    <!-- Report Parameters -->
+    <parameter name="INVOICE_NUMBER" class="java.lang.String"/>
+    <parameter name="CUSTOMER_NAME" class="java.lang.String"/>
+    <parameter name="CUSTOMER_PHONE" class="java.lang.String"/>
+    <parameter name="COURT_NAME" class="java.lang.String"/>
+    <parameter name="CATEGORY_NAME" class="java.lang.String"/>
+    <parameter name="BOOKING_DATE" class="java.lang.String"/>
+    <parameter name="TIME_SLOT" class="java.lang.String"/>
+    <parameter name="TOTAL_AMOUNT" class="java.lang.Double"/>
+    <parameter name="DISCOUNT_AMOUNT" class="java.lang.Double"/>
+    <parameter name="FINAL_AMOUNT" class="java.lang.Double"/>
+    <parameter name="PAYMENT_METHOD" class="java.lang.String"/>
+
+    <!-- Fields for Itemized Services / Purchases -->
+    <field name="itemName" class="java.lang.String"/>
+    <field name="quantity" class="java.lang.Integer"/>
+    <field name="unitPrice" class="java.lang.Double"/>
+    <field name="totalPrice" class="java.lang.Double"/>
+
+    <title>
+        <band height="110" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="100" backcolor="#1E293B" uuid="62a5b6f3-a123-4bcf-bcde-123456789abc"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="20" y="15" width="300" height="35" forecolor="#FFFFFF" uuid="9b6f8a42-7711-4b1f-a5bc-223456789abc"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="22" isBold="true"/>
+                </textElement>
+                <text><![CDATA[SPORTS BOOKING SYSTEM]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="20" y="55" width="300" height="20" forecolor="#94A3B8" uuid="8a5e7b31-6622-4a2e-b4cb-333456789abc"/>
+                <textElement>
+                    <font size="11"/>
+                </textElement>
+                <text><![CDATA[Official Booking & Payment Invoice / Kiosk POS]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="360" y="20" width="180" height="20" forecolor="#38BDF8" uuid="7c4d6a20-5533-493d-a3ba-444456789abc"/>
+                <textElement textAlignment="Right">
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[PAYMENT RECEIPT]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="360" y="45" width="180" height="18" forecolor="#FFFFFF" uuid="6d3c591f-4444-484c-92a9-555556789abc"/>
+                <textElement textAlignment="Right">
+                    <font size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA["No: " + $P{INVOICE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="360" y="65" width="180" height="18" forecolor="#94A3B8" uuid="5e2b480e-3355-475b-8198-666656789abc"/>
+                <textElement textAlignment="Right">
+                    <font size="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Date: " + $P{BOOKING_DATE}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <pageHeader>
+        <band height="95" splitType="Stretch">
+            <staticText>
+                <reportElement x="10" y="10" width="120" height="18" uuid="11111111-2222-3333-4444-555555555555"/>
+                <textElement><font isBold="true"/> </textElement>
+                <text><![CDATA[Customer Name:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="130" y="10" width="180" height="18" uuid="22222222-3333-4444-5555-666666666666"/>
+                <textFieldExpression><![CDATA[$P{CUSTOMER_NAME}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="10" y="30" width="120" height="18" uuid="33333333-4444-5555-6666-777777777777"/>
+                <textElement><font isBold="true"/> </textElement>
+                <text><![CDATA[Phone Number:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="130" y="30" width="180" height="18" uuid="44444444-5555-6666-7777-888888888888"/>
+                <textFieldExpression><![CDATA[$P{CUSTOMER_PHONE}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="320" y="10" width="100" height="18" uuid="55555555-6666-7777-8888-999999999999"/>
+                <textElement><font isBold="true"/> </textElement>
+                <text><![CDATA[Court Name:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="420" y="10" width="130" height="18" uuid="66666666-7777-8888-9999-000000000000"/>
+                <textFieldExpression><![CDATA[$P{COURT_NAME}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="320" y="30" width="100" height="18" uuid="77777777-8888-9999-0000-111111111111"/>
+                <textElement><font isBold="true"/> </textElement>
+                <text><![CDATA[Category / Slot:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="420" y="30" width="130" height="18" uuid="88888888-9999-0000-1111-222222222222"/>
+                <textFieldExpression><![CDATA[$P{CATEGORY_NAME} + " (" + $P{TIME_SLOT} + ")"]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="0" y="60" width="555" height="1" forecolor="#CBD5E1" uuid="99999999-0000-1111-2222-333333333333"/>
+            </line>
+        </band>
+    </pageHeader>
+
+    <columnHeader>
+        <band height="30" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="28" backcolor="#F1F5F9" uuid="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"/>
+                <graphicElement><pen lineWidth="0.0"/></graphicElement>
+            </rectangle>
+            <staticText>
+                <reportElement x="15" y="6" width="230" height="18" uuid="bbbbbbbb-cccc-dddd-eeee-ffffffffffff"/>
+                <textElement><font isBold="true"/> </textElement>
+                <text><![CDATA[Description / Item]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="250" y="6" width="70" height="18" textAlignment="Center" uuid="cccccccc-dddd-eeee-ffff-000000000000"/>
+                <textElement><font isBold="true"/> </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="330" y="6" width="100" height="18" textAlignment="Right" uuid="dddddddd-eeee-ffff-0000-111111111111"/>
+                <textElement><font isBold="true"/> </textElement>
+                <text><![CDATA[Unit Price (VND)]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="440" y="6" width="100" height="18" textAlignment="Right" uuid="eeeeeeee-ffff-0000-1111-222222222222"/>
+                <textElement><font isBold="true"/> </textElement>
+                <text><![CDATA[Subtotal (VND)]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="25" splitType="Stretch">
+            <textField>
+                <reportElement x="15" y="4" width="230" height="18" uuid="ffffffff-0000-1111-2222-333333333333"/>
+                <textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="250" y="4" width="70" height="18" textAlignment="Center" uuid="00000000-1111-2222-3333-444444444444"/>
+                <textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0">
+                <reportElement x="330" y="4" width="100" height="18" textAlignment="Right" uuid="11111111-2222-3333-4444-555555555555"/>
+                <textFieldExpression><![CDATA[$F{unitPrice}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0">
+                <reportElement x="440" y="4" width="100" height="18" textAlignment="Right" uuid="22222222-3333-4444-5555-666666666666"/>
+                <textFieldExpression><![CDATA[$F{totalPrice}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <summary>
+        <band height="140" splitType="Stretch">
+            <line>
+                <reportElement x="0" y="10" width="555" height="1" forecolor="#CBD5E1" uuid="33333333-4444-5555-6666-777777777777"/>
+            </line>
+            <staticText>
+                <reportElement x="300" y="20" width="130" height="20" uuid="44444444-5555-6666-7777-888888888888"/>
+                <textElement textAlignment="Right"><font isBold="true"/> </textElement>
+                <text><![CDATA[Gross Total:]]></text>
+            </staticText>
+            <textField pattern="#,##0 VND">
+                <reportElement x="440" y="20" width="100" height="20" textAlignment="Right" uuid="55555555-6666-7777-8888-999999999999"/>
+                <textFieldExpression><![CDATA[$P{TOTAL_AMOUNT}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="300" y="45" width="130" height="20" uuid="66666666-7777-8888-9999-000000000000"/>
+                <textElement textAlignment="Right"><font isBold="true"/> </textElement>
+                <text><![CDATA[Discount:]]></text>
+            </staticText>
+            <textField pattern="#,##0 VND">
+                <reportElement x="440" y="45" width="100" height="20" textAlignment="Right" uuid="77777777-8888-9999-0000-111111111111"/>
+                <textFieldExpression><![CDATA[$P{DISCOUNT_AMOUNT}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="300" y="70" width="130" height="25" forecolor="#0F172A" uuid="88888888-9999-0000-1111-222222222222"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"><font size="13" isBold="true"/> </textElement>
+                <text><![CDATA[Final Payable:]]></text>
+            </staticText>
+            <textField pattern="#,##0 VND">
+                <reportElement x="440" y="70" width="100" height="25" forecolor="#2563EB" uuid="99999999-0000-1111-2222-333333333333"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"><font size="13" isBold="true"/> </textElement>
+                <textFieldExpression><![CDATA[$P{FINAL_AMOUNT}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="20" y="25" width="100" height="18" uuid="aaaaaaaa-1111-2222-3333-444444444444"/>
+                <textElement><font isBold="true"/> </textElement>
+                <text><![CDATA[Payment Method:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="120" y="25" width="150" height="18" uuid="bbbbbbbb-2222-3333-4444-555555555555"/>
+                <textFieldExpression><![CDATA[$P{PAYMENT_METHOD}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="20" y="110" width="515" height="20" forecolor="#64748B" textAlignment="Center" uuid="cccccccc-3333-4444-5555-666666666666"/>
+                <textElement><font size="9" isItalic="true"/> </textElement>
+                <text><![CDATA[Thank you for using Sports Booking System. For inquiries or support, please visit the counter or call 1900-xxxx.]]></text>
+            </staticText>
+        </band>
+    </summary>
+</jasperReport>

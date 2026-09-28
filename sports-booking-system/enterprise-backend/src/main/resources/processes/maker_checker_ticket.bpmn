@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_MakerChecker"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.20.0">
+
+  <bpmn:process id="makerCheckerTicketProcess" name="Maker-Checker Ticket Approval Workflow" isExecutable="true">
+    
+    <!-- Start Event: Maker creates ticket -->
+    <bpmn:startEvent id="StartEvent_MakerSubmit" name="Maker Submits Ticket">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Checker Review User Task -->
+    <bpmn:userTask id="Task_CheckerReview" name="Checker Review Ticket" camunda:candidateGroups="ROLE_ADMIN,ROLE_CHECKER">
+      <bpmn:documentation>Checker evaluates ticket details, validates information and chooses Approve or Reject</bpmn:documentation>
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Exclusive Gateway: Approved or Rejected -->
+    <bpmn:exclusiveGateway id="Gateway_Decision" name="Approval Decision">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_Approved</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Rejected</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- Service Task: Process Approved Ticket -->
+    <bpmn:serviceTask id="Task_ProcessApproved" name="Process Approval" camunda:delegateExpression="${processApprovedTicketDelegate}">
+      <bpmn:incoming>Flow_Approved</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Service Task: Process Rejected Ticket -->
+    <bpmn:serviceTask id="Task_ProcessRejected" name="Process Rejection" camunda:delegateExpression="${processRejectedTicketDelegate}">
+      <bpmn:incoming>Flow_Rejected</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- Service Task: Send Notification Email -->
+    <bpmn:serviceTask id="Task_SendMail" name="Send Mail Notification" camunda:delegateExpression="${sendEmailNotificationDelegate}">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- End Event -->
+    <bpmn:endEvent id="EndEvent_Completed" name="Workflow Completed">
+      <bpmn:incoming>Flow_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_MakerSubmit" targetRef="Task_CheckerReview" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_CheckerReview" targetRef="Gateway_Decision" />
+    
+    <bpmn:sequenceFlow id="Flow_Approved" name="Approved" sourceRef="Gateway_Decision" targetRef="Task_ProcessApproved">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    
+    <bpmn:sequenceFlow id="Flow_Rejected" name="Rejected" sourceRef="Gateway_Decision" targetRef="Task_ProcessRejected">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_ProcessApproved" targetRef="Task_SendMail" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_ProcessRejected" targetRef="Task_SendMail" />
+    <bpmn:sequenceFlow id="Flow_End" sourceRef="Task_SendMail" targetRef="EndEvent_Completed" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="makerCheckerTicketProcess">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_MakerSubmit">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="134" y="145" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1_di" bpmnElement="Task_CheckerReview">
+        <dc:Bounds x="250" y="80" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1_di" bpmnElement="Gateway_Decision" isMarkerVisible="true">
+        <dc:Bounds x="430" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="412" y="65" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_Approve_di" bpmnElement="Task_ProcessApproved">
+        <dc:Bounds x="540" y="40" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_Reject_di" bpmnElement="Task_ProcessRejected">
+        <dc:Bounds x="540" y="160" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_Mail_di" bpmnElement="Task_SendMail">
+        <dc:Bounds x="720" y="95" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_Completed">
+        <dc:Bounds x="902" y="117" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="893" y="160" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="250" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="370" y="120" />
+        <di:waypoint x="430" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Approved_di" bpmnElement="Flow_Approved">
+        <di:waypoint x="455" y="95" />
+        <di:waypoint x="455" y="80" />
+        <di:waypoint x="540" y="80" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="466" y="63" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Rejected_di" bpmnElement="Flow_Rejected">
+        <di:waypoint x="455" y="145" />
+        <di:waypoint x="455" y="200" />
+        <di:waypoint x="540" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="468" y="203" width="44" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="660" y="80" />
+        <di:waypoint x="690" y="80" />
+        <di:waypoint x="690" y="135" />
+        <di:waypoint x="720" y="135" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="660" y="200" />
+        <di:waypoint x="690" y="200" />
+        <di:waypoint x="690" y="135" />
+        <di:waypoint x="720" y="135" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_End_di" bpmnElement="Flow_End">
+        <di:waypoint x="840" y="135" />
+        <di:waypoint x="902" y="135" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

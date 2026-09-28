@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sportsbooking.enterprise.mapper.CategoryMapper">
+
+    <resultMap id="CategoryResultMap" type="com.sportsbooking.enterprise.model.Category">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="slug" column="slug"/>
+        <result property="icon" column="icon"/>
+        <result property="description" column="description"/>
+        <result property="isActive" column="is_active"/>
+        <result property="displayOrder" column="display_order"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="CategoryColumns">
+        id, name, slug, icon, description, is_active, display_order, created_at, updated_at
+    </sql>
+
+    <!-- Dynamic Search with MyBatis <where>, <if>, <foreach> -->
+    <select id="findByCriteria" parameterType="com.sportsbooking.enterprise.dto.CategorySearchCriteria" resultMap="CategoryResultMap">
+        SELECT <include refid="CategoryColumns"/>
+        FROM categories
+        <where>
+            <if test="name != null and name != ''">
+                AND LOWER(name) LIKE LOWER(CONCAT('%', #{name}, '%'))
+            </if>
+            <if test="isActive != null">
+                AND is_active = #{isActive}
+            </if>
+            <if test="ids != null and ids.size() > 0">
+                AND id IN
+                <foreach collection="ids" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        <choose>
+            <when test="sortColumn != null and sortColumn != ''">
+                ORDER BY ${sortColumn} ${sortDirection}
+            </when>
+            <otherwise>
+                ORDER BY display_order ASC, created_at DESC
+            </otherwise>
+        </choose>
+        <if test="limit > 0">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="countByCriteria" parameterType="com.sportsbooking.enterprise.dto.CategorySearchCriteria" resultType="long">
+        SELECT COUNT(id)
+        FROM categories
+        <where>
+            <if test="name != null and name != ''">
+                AND LOWER(name) LIKE LOWER(CONCAT('%', #{name}, '%'))
+            </if>
+            <if test="isActive != null">
+                AND is_active = #{isActive}
+            </if>
+            <if test="ids != null and ids.size() > 0">
+                AND id IN
+                <foreach collection="ids" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" parameterType="long" resultMap="CategoryResultMap">
+        SELECT <include refid="CategoryColumns"/>
+        FROM categories
+        WHERE id = #{id}
+    </select>
+
+    <select id="findBySlug" parameterType="string" resultMap="CategoryResultMap">
+        SELECT <include refid="CategoryColumns"/>
+        FROM categories
+        WHERE slug = #{slug}
+    </select>
+
+    <insert id="insert" parameterType="com.sportsbooking.enterprise.model.Category" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO categories (name, slug, icon, description, is_active, display_order, created_at, updated_at)
+        VALUES (#{name}, #{slug}, #{icon}, #{description}, #{isActive}, #{displayOrder}, NOW(), NOW())
+    </insert>
+
+    <update id="update" parameterType="com.sportsbooking.enterprise.model.Category">
+        UPDATE categories
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="slug != null">slug = #{slug},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+            <if test="displayOrder != null">display_order = #{displayOrder},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM categories WHERE id = #{id}
+    </delete>
+
+    <insert id="batchInsert" parameterType="list">
+        INSERT INTO categories (name, slug, icon, description, is_active, display_order, created_at, updated_at)
+        VALUES
+        <foreach collection="categories" item="cat" separator=",">
+            (#{cat.name}, #{cat.slug}, #{cat.icon}, #{cat.description}, #{cat.isActive}, #{cat.displayOrder}, NOW(), NOW())
+        </foreach>
+    </insert>
+
+    <delete id="batchDelete" parameterType="list">
+        DELETE FROM categories WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,72 @@
+<mxfile host="app.diagrams.net" modified="2026-09-28T16:08:30.000Z" agent="Mozilla/5.0" version="22.1.0" type="device">
+  <diagram id="maker-checker-bpmn" name="Camunda Maker Checker Workflow">
+    <mxGraphModel dx="1200" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Pool Container -->
+        <mxCell id="pool" value="Sports Booking - Ticket Approval Workflow (Camunda BPMN 2.0)" style="swimlane;html=1;childLayout=stackLayout;resizeParent=1;resizeParentMax=0;horizontal=1;startSize=30;horizontalFlip=0;fillColor=#f8fafc;strokeColor=#475569;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="1020" height="380" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 1: Maker -->
+        <mxCell id="lane_maker" value="Maker (Partner / Staff)" style="swimlane;html=1;startSize=20;fillColor=#eff6ff;strokeColor=#93c5fd;fontStyle=1;" vertex="1" parent="pool">
+          <mxGeometry y="30" width="1020" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="start_event" value="Submit Ticket&#xa;(Withdrawal / Court)" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#86efac;strokeColor=#16a34a;fontStyle=1;" vertex="1" parent="lane_maker">
+          <mxGeometry x="60" y="45" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="start_call" value="Call API /workflow/tickets&#xa;RuntimeService.startProcessInstance" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fef08a;strokeColor=#ca8a04;size=14;" vertex="1" parent="lane_maker">
+          <mxGeometry x="160" y="35" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 2: Checker (Admin) -->
+        <mxCell id="lane_checker" value="Checker (Admin)" style="swimlane;html=1;startSize=20;fillColor=#fdf4ff;strokeColor=#f0abfc;fontStyle=1;" vertex="1" parent="pool">
+          <mxGeometry y="180" width="1020" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="user_task" value="User Task:&#xa;Review Ticket Details&#xa;(Admin Portal UI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#c026d3;fontStyle=1;" vertex="1" parent="lane_checker">
+          <mxGeometry x="180" y="60" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway_decision" value="Approved?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fed7aa;strokeColor=#ea580c;fontStyle=1;" vertex="1" parent="lane_checker">
+          <mxGeometry x="400" y="60" width="90" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="task_approve" value="Service Task:&#xa;Process Approval&#xa;(Credit Wallet / Activate Court)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#16a34a;fontStyle=1;" vertex="1" parent="lane_checker">
+          <mxGeometry x="540" y="20" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="task_reject" value="Service Task:&#xa;Process Rejection&#xa;(Refund Pending Wallet)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#dc2626;fontStyle=1;" vertex="1" parent="lane_checker">
+          <mxGeometry x="540" y="110" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="task_mail" value="Service Task:&#xa;SendMailNotificationDelegate&#xa;(JavaMailSender to Maker)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=1;" vertex="1" parent="lane_checker">
+          <mxGeometry x="750" y="65" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="end_event" value="Workflow&#xa;Completed" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fca5a5;strokeColor=#b91c1c;fontStyle=1;" vertex="1" parent="lane_checker">
+          <mxGeometry x="950" y="70" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Connecting Flows -->
+        <mxCell id="f1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;" edge="1" source="start_event" target="user_task" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;" edge="1" source="user_task" target="gateway_decision" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_app" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#16a34a;" edge="1" source="gateway_decision" target="task_approve" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_rej" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;strokeColor=#dc2626;" edge="1" source="gateway_decision" target="task_reject" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;" edge="1" source="task_approve" target="task_mail" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;" edge="1" source="task_reject" target="task_mail" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f_end" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=2;" edge="1" source="task_mail" target="end_event" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

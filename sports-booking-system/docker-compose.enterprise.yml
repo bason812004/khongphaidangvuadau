@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Sports Booking & Camunda Engine
+  postgres:
+    image: postgres:16-alpine
+    container_name: sports-postgres
+    environment:
+      POSTGRES_DB: sports_booking_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sports-network
+
+  # Redis Cache & Distributed Lock
+  redis:
+    image: redis:7-alpine
+    container_name: sports-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - sports-network
+
+  # Zookeeper for Apache Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: sports-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - sports-network
+
+  # Apache Kafka Message Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: sports-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - sports-network
+
+  # Keycloak IAM & SSO Provider
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.3
+    container_name: sports-keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: adminpassword
+      KC_HTTP_PORT: 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - sports-network
+
+volumes:
+  postgres_data:
+
+networks:
+  sports-network:
+    driver: bridge

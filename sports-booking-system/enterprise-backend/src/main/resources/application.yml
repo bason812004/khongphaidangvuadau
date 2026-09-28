@@ -1,0 +1,102 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: sports-booking-enterprise
+
+  # Database DataSource
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/sports_booking_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  # JPA & Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Redis Cache
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2000ms
+
+  # Kafka
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: sports-enterprise-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+  # Mail Service
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:admin@sportsbooking.com}
+    password: ${MAIL_PASSWORD:secret}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# MyBatis Configuration
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.sportsbooking.enterprise.model
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+
+# Camunda BPMN Engine Configuration
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: adminpassword
+      first-name: Admin
+      last-name: System
+      email: admin@sportsbooking.com
+    auto-deployment-enabled: true
+    generic-properties:
+      properties:
+        historyLevel: FULL
+
+# Keycloak & JWT Security Configuration
+security:
+  jwt:
+    secret-key: ${JWT_SECRET:EnterpriseSecretKeySportsBookingSystem2026SecureLongKey123456}
+    expiration-time: 86400000 # 24 hours
+  keycloak:
+    auth-server-url: ${KEYCLOAK_URL:http://localhost:8080}
+    realm: sports-booking
+    resource: sports-admin-portal
+    credentials:
+      secret: ${KEYCLOAK_CLIENT_SECRET:your-client-secret}
+
+# Custom Enterprise Application Properties
+enterprise:
+  reports:
+    template-path: classpath:reports/
+    output-dir: ./reports-output

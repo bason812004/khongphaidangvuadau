@@ -1,0 +1,77 @@
+<mxfile host="app.diagrams.net" modified="2026-09-28T16:08:00.000Z" agent="Mozilla/5.0" version="22.1.0" type="device">
+  <diagram id="enterprise-architecture" name="System Architecture">
+    <mxGraphModel dx="1422" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Frontend Layer Box -->
+        <mxCell id="fe_box" value="Frontend Layer (React 19, Vite, AntD, TailwindCSS, Bootstrap, SCSS, Material Icons)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontStyle=1;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="40" width="1040" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_admin" value="Enterprise Admin Portal&#xa;(User/Category CRUD, Reports, Camunda Tasklist)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0369a1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="80" width="300" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_kiosk" value="Kiosk &amp; Booking POS&#xa;(Check-in, Cashier, Barcode/QR, Invoice)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0369a1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="80" width="280" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_shopping" value="Shopping &amp; Purchasing&#xa;(Inventory, Rentals, Slip Reports)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0369a1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="750" y="80" width="270" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Gateway & Security Layer -->
+        <mxCell id="sec_box" value="API Gateway &amp; Security Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontStyle=1;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="210" width="1040" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="keycloak_node" value="Keycloak IAM Provider&#xa;(OAuth2 / OIDC / PBKDF2 Password Hash / Session)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef08a;strokeColor=#b45309;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="240" width="340" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="jwt_node" value="Spring Security JWT Filter&#xa;(Bearer Token Validator &amp; RBAC Role Enforcement)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b45309;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="240" width="380" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Enterprise Backend Layer -->
+        <mxCell id="be_box" value="Enterprise Backend Core (Spring Boot 3 - Java 21)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#16a34a;fontStyle=1;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="350" width="1040" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="jpa_module" value="Spring Data JPA &amp; Hibernate&#xa;(User Management, Roles, RBAC,&#xa;Transactional Operations)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#15803d;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="400" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="mybatis_module" value="MyBatis Dynamic SQL&#xa;(Category Management,&#xa;Dynamic &lt;where&gt; &lt;if&gt; Queries,&#xa;Batch Insert/Delete)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#15803d;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="400" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="camunda_module" value="Camunda 7 BPMN Engine&#xa;(Maker-Checker Ticket Flow,&#xa;Exclusive Gateway, User Task,&#xa;SendMail ServiceTask)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c2410c;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="400" width="230" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="jasper_module" value="JasperReports &amp; POI Engine&#xa;(.jrxml Invoices, PDF Export,&#xa;Excel Inventory Reports,&#xa;Apache POI Import)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#b91c1c;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="400" width="220" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Message Queue, Cache, Database Layer -->
+        <mxCell id="mw_box" value="Middleware, Persistence &amp; Messaging Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontStyle=1;verticalAlign=top;align=left;spacingLeft=15;spacingTop=10;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="580" width="1040" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka_broker" value="Apache Kafka Broker&#xa;(Topics: booking-events, maker-checker-events, audit-events)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fef08a;strokeColor=#ca8a04;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="630" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="redis_cache" value="Redis In-Memory Cache&#xa;(Cache-Aside Pattern, TTL, Token Blacklist, Lock)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#ef4444;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="630" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="postgres_db" value="PostgreSQL Database&#xa;(Users, Roles, Categories, Bookings, Wallets, Camunda Schema)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dbeafe;strokeColor=#2563eb;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="615" width="280" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- Connecting Arrows -->
+        <mxCell id="edge1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" source="fe_box" target="sec_box" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" source="sec_box" target="be_box" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;" edge="1" source="be_box" target="mw_box" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
