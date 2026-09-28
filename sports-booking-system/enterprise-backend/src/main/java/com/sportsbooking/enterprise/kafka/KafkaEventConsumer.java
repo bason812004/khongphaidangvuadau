@@ -13,7 +13,7 @@ public class KafkaEventConsumer {
 
     private final RedisCacheService redisCacheService;
 
-    @KafkaListener(topics = KafkaEventProducer.TOPIC_BOOKING_EVENTS, groupId = "sports-enterprise-group")
+    @KafkaListener(topics = KafkaEventProducer.TOPIC_BOOKING_EVENTS, groupId = "sports-enterprise-group", autoStartup = "${spring.kafka.listener.auto-startup:false}")
     public void consumeBookingEvent(String message) {
         log.info("[KAFKA CONSUMER] Received Booking Event: {}", message);
         // Invalidate booking slot availability cache in Redis to maintain real-time consistency
@@ -21,7 +21,7 @@ public class KafkaEventConsumer {
         log.info("[KAFKA CONSUMER] Evicted Redis cache key 'sports:courts:availability' after booking event.");
     }
 
-    @KafkaListener(topics = KafkaEventProducer.TOPIC_TICKET_EVENTS, groupId = "sports-enterprise-group")
+    @KafkaListener(topics = KafkaEventProducer.TOPIC_TICKET_EVENTS, groupId = "sports-enterprise-group", autoStartup = "${spring.kafka.listener.auto-startup:false}")
     public void consumeMakerCheckerEvent(String message) {
         log.info("[KAFKA CONSUMER] Received Maker-Checker Ticket Event: {}", message);
     }

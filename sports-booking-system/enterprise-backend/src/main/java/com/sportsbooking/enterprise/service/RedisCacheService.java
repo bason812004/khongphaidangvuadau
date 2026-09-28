@@ -1,49 +1,66 @@
 package com.sportsbooking.enterprise.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class RedisCacheService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    @Autowired(required = false)
+    private RedisTemplate<String, Object> redisTemplate;
+
+    // In-memory fallback map for zero-docker local environment
+    private final Map<String, Object> inMemoryCache = new ConcurrentHashMap<>();
 
     public void set(String key, Object value, long timeout, TimeUnit unit) {
-        try {
-            redisTemplate.opsForValue().set(key, value, timeout, unit);
-        } catch (Exception e) {
-            log.warn("Redis set failed for key: {} - error: {}", key, e.getMessage());
+        inMemoryCache.put(key, value);
+        if (redisTemplate != null) {
+            try {
+                redisTemplate.opsForValue().set(key, value, timeout, unit);
+            } catch (Exception e) {
+                log.debug("Redis unavailable, using in-memory cache for key: {}", key);
+            }
         }
     }
 
     public Object get(String key) {
-        try {
-            return redisTemplate.opsForValue().get(key);
-        } catch (Exception e) {
-            log.warn("Redis get failed for key: {} - error: {}", key, e.getMessage());
-            return null;
+        if (redisTemplate != null) {
+            try {
+                Object val = redisTemplate.opsForValue().get(key);
+                if (val != null) return val;
+            } catch (Exception e) {
+                log.debug("Redis unavailable, fetching from in-memory cache for key: {}", key);
+            }
         }
+        return inMemoryCache.get(key);
     }
 
     public void delete(String key) {
-        try {
-            redisTemplate.delete(key);
-        } catch (Exception e) {
-            log.warn("Redis delete failed for key: {} - error: {}", key, e.getMessage());
+        inMemoryCache.remove(key);
+        if (redisTemplate != null) {
+            try {
+                redisTemplate.delete(key);
+            } catch (Exception e) {
+                log.debug("Redis unavailable for delete key: {}", key);
+            }
         }
     }
 
     public boolean hasKey(String key) {
-        try {
-            return Boolean.TRUE.equals(redisTemplate.hasKey(key));
-        } catch (Exception e) {
-            return false;
+        if (redisTemplate != null) {
+            try {
+                return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+            } catch (Exception e) {
+                return inMemoryCache.containsKey(key);
+            }
         }
+        return inMemoryCache.containsKey(key);
     }
 }
