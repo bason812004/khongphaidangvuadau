@@ -10,7 +10,7 @@
                   exporter="Camunda Modeler"
                   exporterVersion="5.20.0">
 
-  <bpmn:process id="makerCheckerTicketProcess" name="Maker-Checker Ticket Approval Workflow" isExecutable="true">
+  <bpmn:process id="makerCheckerTicketProcess" name="Maker-Checker Ticket Approval Workflow" isExecutable="true" camunda:historyTimeToLive="P30D">
     
     <!-- Start Event: Maker creates ticket -->
     <bpmn:startEvent id="StartEvent_MakerSubmit" name="Maker Submits Ticket">

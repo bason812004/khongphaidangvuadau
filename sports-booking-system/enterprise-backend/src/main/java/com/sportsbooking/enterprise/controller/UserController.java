@@ -25,12 +25,12 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<UserDTO>>> getUsers(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Boolean isActive,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "isActive", required = false) Boolean isActive,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "createdAt") String sortBy,
+            @RequestParam(value = "direction", defaultValue = "desc") String direction
     ) {
         Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Page<UserDTO> result = userService.searchUsers(keyword, isActive, PageRequest.of(page, size, sort));

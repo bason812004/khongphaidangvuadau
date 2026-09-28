@@ -21,12 +21,12 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Map<String, Object>>> getCategories(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Boolean isActive,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "display_order") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "isActive", required = false) Boolean isActive,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortBy", defaultValue = "display_order") String sortBy,
+            @RequestParam(value = "direction", defaultValue = "asc") String direction
     ) {
         Map<String, Object> result = categoryService.searchCategories(name, isActive, page, size, sortBy, direction);
         return ResponseEntity.ok(ApiResponse.ok(result, "Categories retrieved with MyBatis successfully"));

@@ -166,8 +166,7 @@ export function EnterpriseAdminPortalPage() {
       )
     );
     message.success(
-      `Đã hoàn thành User Task Camunda BPMN! Quyết định: ${
-        approved ? "PHÊ DUYỆT" : "TỪ CHỐI"
+      `Đã hoàn thành User Task Camunda BPMN! Quyết định: ${approved ? "PHÊ DUYỆT" : "TỪ CHỐI"
       }. Đã kích hoạt Service Task gửi email tự động.`
     );
     setReviewModalVisible(false);
@@ -268,18 +267,7 @@ export function EnterpriseAdminPortalPage() {
         </div>
       </header>
 
-      {/* 2. Technology Stack Pill Bar */}
-      <div className="tech-pill-bar">
-        <span className="text-muted small me-2 align-self-center">Công nghệ tích hợp:</span>
-        <span className="tech-pill pill-spring">Spring Boot 3 (Java 21)</span>
-        <span className="tech-pill pill-camunda">Camunda 7 BPMN Maker-Checker</span>
-        <span className="tech-pill pill-jasper">JasperReports (.jrxml PDF/Excel)</span>
-        <span className="tech-pill pill-mybatis">MyBatis Dynamic SQL</span>
-        <span className="tech-pill pill-spring">JPA / Hibernate ORM</span>
-        <span className="tech-pill pill-keycloak">Keycloak / JWT / PBKDF2</span>
-        <span className="tech-pill pill-kafka">Apache Kafka & Redis Cache</span>
-        <span className="tech-pill pill-spring">Ant Design + Bootstrap + SCSS + Tailwind</span>
-      </div>
+
 
       {/* 3. Main Tabs Navigation */}
       <div className="portal-content">

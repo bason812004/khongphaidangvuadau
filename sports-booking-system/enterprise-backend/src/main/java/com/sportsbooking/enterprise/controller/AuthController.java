@@ -55,7 +55,24 @@ public class AuthController {
         session.setAttribute("USER_ID", user.getId());
         session.setAttribute("USER_EMAIL", user.getEmail());
 
+        String primaryRole = roleNames.stream()
+                .filter(r -> r.contains("ADMIN"))
+                .findFirst()
+                .or(() -> roleNames.stream().filter(r -> r.contains("PARTNER")).findFirst())
+                .or(() -> roleNames.stream().filter(r -> r.contains("CASHIER")).findFirst())
+                .orElse("USER")
+                .replace("ROLE_", "");
+
+        AuthResponse.UserSummary userSummary = AuthResponse.UserSummary.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .role(primaryRole)
+                .roles(roleNames)
+                .build();
+
         AuthResponse authResponse = AuthResponse.builder()
+                .token(token)
                 .accessToken(token)
                 .tokenType("Bearer")
                 .expiresIn(86400000L)
@@ -63,10 +80,41 @@ public class AuthController {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .roles(roleNames)
+                .user(userSummary)
                 .keycloakSessionId(session.getId())
                 .build();
 
         return ResponseEntity.ok(ApiResponse.ok(authResponse, "Login successful"));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<AuthResponse.UserSummary>> getCurrentUser(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            String jwt = bearerToken.substring(7);
+            if (tokenProvider.validateToken(jwt)) {
+                String email = tokenProvider.getEmailFromJWT(jwt);
+                User user = userRepository.findByEmail(email).orElse(null);
+                if (user != null) {
+                    List<String> roleNames = user.getRoles().stream().map(Role::getName).collect(Collectors.toList());
+                    String primaryRole = roleNames.stream()
+                            .filter(r -> r.contains("ADMIN"))
+                            .findFirst()
+                            .or(() -> roleNames.stream().filter(r -> r.contains("PARTNER")).findFirst())
+                            .orElse("USER")
+                            .replace("ROLE_", "");
+                    AuthResponse.UserSummary summary = AuthResponse.UserSummary.builder()
+                            .id(user.getId())
+                            .email(user.getEmail())
+                            .fullName(user.getFullName())
+                            .role(primaryRole)
+                            .roles(roleNames)
+                            .build();
+                    return ResponseEntity.ok(ApiResponse.ok(summary));
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("Unauthorized"));
     }
 
     @PostMapping("/register")

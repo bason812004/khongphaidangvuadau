@@ -36,7 +36,7 @@ public class WorkflowController {
      */
     @GetMapping("/tasks")
     public ResponseEntity<ApiResponse<List<TaskResponse>>> getTasks(
-            @RequestParam(required = false, defaultValue = "ROLE_ADMIN") String group) {
+            @RequestParam(value = "group", required = false, defaultValue = "ROLE_ADMIN") String group) {
         List<TaskResponse> tasks = makerCheckerService.getTasksForChecker(group);
         return ResponseEntity.ok(ApiResponse.ok(tasks, "Pending review tasks retrieved successfully"));
     }
