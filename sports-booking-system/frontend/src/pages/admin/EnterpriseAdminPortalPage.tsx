@@ -37,6 +37,10 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EmailIcon from "@mui/icons-material/Email";
 import StorageIcon from "@mui/icons-material/Storage";
+import SchoolIcon from "@mui/icons-material/School";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../features/auth/hooks/useAuth";
 
 import "../../styles/enterprise-admin.scss";
 
@@ -81,7 +85,14 @@ interface InventoryProduct {
 }
 
 export function EnterpriseAdminPortalPage() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState("kiosk");
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   // 1. User Management State (JPA / Hibernate)
   const [users, setUsers] = useState<UserItem[]>([
@@ -261,7 +272,13 @@ export function EnterpriseAdminPortalPage() {
           <Tag color="cyan">Keycloak SSO: Connected</Tag>
           <Tag color="green">Apache Kafka: 3 Topics Active</Tag>
           <Tag color="gold">Redis Cache: Hit Rate 94%</Tag>
-          <Button type="primary" danger size="small" onClick={() => message.info("Đã đăng xuất phiên Keycloak & xóa LocalStorage!")}>
+          <Button
+            type="primary"
+            danger
+            size="small"
+            icon={<LogoutIcon style={{ fontSize: "0.95rem" }} />}
+            onClick={handleLogout}
+          >
             Đăng xuất
           </Button>
         </div>
@@ -614,6 +631,84 @@ export function EnterpriseAdminPortalPage() {
                         </Upload>
                       </div>
                     </Col>
+                  </Row>
+                </Card>
+              ),
+            },
+
+            // Tab 7: TRAINING & LEARNING
+            {
+              key: "learning",
+              label: (
+                <span>
+                  <SchoolIcon fontSize="small" className="me-1" />
+                  Training & Learning
+                </span>
+              ),
+              children: (
+                <Card title="Hệ Thống Đào Tạo & Khảo Sát Quy Trình Nhân Viên Sân (LMS)" className="admin-card">
+                  <div className="alert alert-success py-2 small mb-4">
+                    <strong>Cổng đào tạo nội bộ (Enterprise LMS):</strong> Giúp đào tạo nhân viên quầy Kiosk POS, đối tác sân thể thao, và quản trị viên thẩm định quy trình phê duyệt Maker - Checker Camunda BPMN.
+                  </div>
+                  <Row gutter={[16, 16]}>
+                    {[
+                      {
+                        title: "1. Vận hành Quầy Thu Ngân & Kiosk Check-in POS",
+                        role: "Dành cho Thu ngân (ROLE_CASHIER)",
+                        duration: "45 phút",
+                        lessons: "5 bài học",
+                        progress: "100%",
+                        status: "Đã hoàn thành",
+                        desc: "Quy trình quét mã QR đặt sân từ mobile, in hóa đơn JasperReports, hoàn tiền hủy lịch và thanh toán dịch vụ bán lẻ.",
+                      },
+                      {
+                        title: "2. Thẩm định Ticket & Nguyên tắc 4 Mắt (Camunda BPMN)",
+                        role: "Dành cho Thẩm định viên (ROLE_CHECKER / ADMIN)",
+                        duration: "60 phút",
+                        lessons: "8 bài học",
+                        progress: "75%",
+                        status: "Đang học",
+                        desc: "Hiểu quy trình BPMN, kiểm tra số dư ví đối tác, đối soát vé rút tiền, phân quyền nhiệm vụ và kích hoạt thông báo tự động.",
+                      },
+                      {
+                        title: "3. Quản lý Danh mục Sân Thể thao (MyBatis Mapper)",
+                        role: "Dành cho Quản trị viên (ROLE_ADMIN)",
+                        duration: "30 phút",
+                        lessons: "4 bài học",
+                        progress: "100%",
+                        status: "Đã hoàn thành",
+                        desc: "Thao tác thêm, cập nhật danh mục loại sân (Bóng đá, Cầu lông, Pickleball, Tennis), cơ chế xóa hàng loạt và bộ nhớ đệm Redis.",
+                      },
+                      {
+                        title: "4. An toàn Thông tin & Quản trị Danh tính Keycloak SSO",
+                        role: "Dành cho Kỹ sư hệ thống (DevOps / SecOps)",
+                        duration: "90 phút",
+                        lessons: "10 bài học",
+                        progress: "40%",
+                        status: "Đang học",
+                        desc: "Mã hóa mật khẩu BCrypt/PBKDF2, luồng cấp phát JWT Token, kiểm soát phiên đăng nhập (Session/LocalStorage) và thu hồi quyền.",
+                      },
+                    ].map((course, idx) => (
+                      <Col span={12} key={idx}>
+                        <div className="border rounded p-3 bg-white h-100 shadow-sm d-flex flex-column justify-content-between">
+                          <div>
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                              <Tag color={course.status === "Đã hoàn thành" ? "green" : "blue"}>{course.status}</Tag>
+                              <span className="text-muted small">{course.duration} • {course.lessons}</span>
+                            </div>
+                            <h6 className="fw-bold mb-1">{course.title}</h6>
+                            <p className="text-primary small mb-2">{course.role}</p>
+                            <p className="text-muted small">{course.desc}</p>
+                          </div>
+                          <div className="mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
+                            <span className="small text-muted">Tiến độ: <strong>{course.progress}</strong></span>
+                            <Button size="small" type="primary" onClick={() => message.info(`Đang mở bài giảng: ${course.title}`)}>
+                              {course.status === "Đã hoàn thành" ? "Xem lại bài giảng" : "Tiếp tục học"}
+                            </Button>
+                          </div>
+                        </div>
+                      </Col>
+                    ))}
                   </Row>
                 </Card>
               ),

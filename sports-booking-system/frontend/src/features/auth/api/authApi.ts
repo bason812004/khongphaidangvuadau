@@ -21,5 +21,12 @@ export const authApi = {
   async me() {
     const { data } = await api.get<ApiResponse<User>>("/auth/me");
     return data.data;
+  },
+  async logout() {
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // Backend may be offline or token expired; ignore errors during logout
+    }
   }
 };

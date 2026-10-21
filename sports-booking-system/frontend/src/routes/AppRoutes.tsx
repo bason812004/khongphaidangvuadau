@@ -1,121 +1,24 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { PublicLayout } from "../components/layout/PublicLayout";
-import { DashboardLayout } from "../components/layout/DashboardLayout";
-import { ProtectedRoute } from "./ProtectedRoute";
-import { HomePage } from "../pages/public/HomePage";
-import { CourtsPage } from "../pages/public/CourtsPage";
-import { CourtDetailPage } from "../pages/public/CourtDetailPage";
-import { PartnersLandingPage } from "../pages/public/PartnersLandingPage";
-import { VouchersPage } from "../pages/public/VouchersPage";
-import { BlogPage } from "../pages/public/BlogPage";
-import { BlogDetailPage } from "../pages/public/BlogDetailPage";
-import { TournamentsPage } from "../pages/public/TournamentsPage";
-import { TournamentDetailPage } from "../pages/public/TournamentDetailPage";
-import { TeammateCreatePage } from "../pages/public/TeammateCreatePage";
-import { TeammateDetailPage } from "../pages/public/TeammateDetailPage";
-import { TeammatesPage } from "../pages/public/TeammatesPage";
 import { LoginPage } from "../pages/auth/LoginPage";
-import { RegisterPage } from "../pages/auth/RegisterPage";
-import { RegisterPartnerPage } from "../pages/auth/RegisterPartnerPage";
-import { BookingPage } from "../pages/user/BookingPage";
-import { PaymentPage } from "../pages/user/PaymentPage";
-import { UserProfilePage } from "../pages/user/UserProfilePage";
-import { UserBookingsPage } from "../pages/user/UserBookingsPage";
-import { UserBookingDetailPage } from "../pages/user/UserBookingDetailPage";
-import { PartnerDashboardPage } from "../pages/partner/PartnerDashboardPage";
-import { PartnerCourtsPage } from "../pages/partner/PartnerCourtsPage";
-import { PartnerCourtFormPage } from "../pages/partner/PartnerCourtFormPage";
-import { PartnerBookingsPage } from "../pages/partner/PartnerBookingsPage";
-import { PartnerStatisticsPage } from "../pages/partner/PartnerStatisticsPage";
-import { PartnerPlaceholderPage } from "../pages/partner/PartnerPlaceholderPage";
-import { AdminDashboardPage } from "../pages/admin/AdminDashboardPage";
-import { AdminUsersPage } from "../pages/admin/AdminUsersPage";
-import { AdminPartnersPage } from "../pages/admin/AdminPartnersPage";
-import { AdminPendingCourtsPage } from "../pages/admin/AdminPendingCourtsPage";
-import { AdminCategoriesPage } from "../pages/admin/AdminCategoriesPage";
-import { AdminReviewsPage } from "../pages/admin/AdminReviewsPage";
-import { AdminReportsPage } from "../pages/admin/AdminReportsPage";
-import { AdminStatisticsPage } from "../pages/admin/AdminStatisticsPage";
-import { AdminAuditLogsPage } from "../pages/admin/AdminAuditLogsPage";
-import { AdminBlockchainLogsPage } from "../pages/admin/AdminBlockchainLogsPage";
 import { EnterpriseAdminPortalPage } from "../pages/admin/EnterpriseAdminPortalPage";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export function AppRoutes() {
   return (
     <Routes>
-      <Route element={<PublicLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-        <Route path="register-partner" element={<RegisterPartnerPage />} />
-        <Route path="partner" element={<PartnersLandingPage />} />
-        <Route path="partners" element={<PartnersLandingPage />} />
-        <Route path="vouchers" element={<VouchersPage />} />
-        <Route path="blog" element={<BlogPage />} />
-        <Route path="blogs" element={<BlogPage />} />
-        <Route path="blogs/:slug" element={<BlogDetailPage />} />
-        <Route path="tournaments" element={<TournamentsPage />} />
-        <Route path="tournaments/:slug" element={<TournamentDetailPage />} />
-        <Route path="teammates" element={<TeammatesPage />} />
-        <Route path="teammates/:id" element={<TeammateDetailPage />} />
-        <Route path="courts" element={<CourtsPage />} />
-        <Route path="courts/:id" element={<CourtDetailPage />} />
-        <Route element={<ProtectedRoute roles={["USER"]} />}>
-          <Route path="teammates/create" element={<TeammateCreatePage />} />
-          <Route path="booking/:courtId" element={<BookingPage />} />
-          <Route path="payment/:bookingId" element={<PaymentPage />} />
-          <Route path="user/profile" element={<UserProfilePage />} />
-          <Route path="user/bookings" element={<UserBookingsPage />} />
-          <Route path="user/bookings/:id" element={<UserBookingDetailPage />} />
-          <Route path="user/vouchers" element={<PartnerPlaceholderPage title="Voucher" />} />
-          <Route path="user/teammates" element={<PartnerPlaceholderPage title="Bài đăng tìm đồng đội của tôi" />} />
-          <Route path="user/blogs" element={<PartnerPlaceholderPage title="Bài viết của tôi" />} />
-        </Route>
+      {/* Public Login Route */}
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Main Enterprise Admin Portal Route (Protected) */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/admin-portal" element={<EnterpriseAdminPortalPage />} />
+        <Route path="/admin/portal" element={<EnterpriseAdminPortalPage />} />
+        <Route path="/enterprise-portal" element={<EnterpriseAdminPortalPage />} />
       </Route>
 
-      <Route element={<ProtectedRoute roles={["PARTNER"]} />}>
-        <Route element={<DashboardLayout />}>
-          <Route path="partner/dashboard" element={<PartnerDashboardPage />} />
-          <Route path="partner/courts" element={<PartnerCourtsPage />} />
-          <Route path="partner/courts/create" element={<PartnerCourtFormPage />} />
-          <Route path="partner/courts/:id/edit" element={<PartnerCourtFormPage />} />
-          <Route path="partner/courts/:id/prices" element={<PartnerPlaceholderPage title="Bảng giá" />} />
-          <Route path="partner/courts/:id/services" element={<PartnerPlaceholderPage title="Dịch vụ đi kèm" />} />
-          <Route path="partner/bookings" element={<PartnerBookingsPage />} />
-          <Route path="partner/vouchers" element={<PartnerPlaceholderPage title="Voucher" />} />
-          <Route path="partner/vouchers/create" element={<PartnerPlaceholderPage title="Đăng voucher" />} />
-          <Route path="partner/tournaments" element={<PartnerPlaceholderPage title="Giải đấu" />} />
-          <Route path="partner/tournaments/create" element={<PartnerPlaceholderPage title="Đăng giải đấu" />} />
-          <Route path="partner/blogs" element={<PartnerPlaceholderPage title="Bài viết" />} />
-          <Route path="partner/calendar" element={<PartnerPlaceholderPage title="Lịch đặt sân" />} />
-          <Route path="partner/statistics" element={<PartnerStatisticsPage />} />
-        </Route>
-      </Route>
-
-      <Route element={<ProtectedRoute roles={["ADMIN"]} />}>
-        <Route element={<DashboardLayout />}>
-          <Route path="admin/dashboard" element={<AdminDashboardPage />} />
-          <Route path="admin/users" element={<AdminUsersPage />} />
-          <Route path="admin/partners" element={<AdminPartnersPage />} />
-          <Route path="admin/courts/pending" element={<AdminPendingCourtsPage />} />
-          <Route path="admin/categories" element={<AdminCategoriesPage />} />
-          <Route path="admin/reviews" element={<AdminReviewsPage />} />
-          <Route path="admin/vouchers" element={<PartnerPlaceholderPage title="Quản lý voucher" />} />
-          <Route path="admin/blogs/pending" element={<PartnerPlaceholderPage title="Duyệt bài viết" />} />
-          <Route path="admin/tournaments/pending" element={<PartnerPlaceholderPage title="Duyệt giải đấu" />} />
-          <Route path="admin/reports" element={<AdminReportsPage />} />
-          <Route path="admin/statistics" element={<AdminStatisticsPage />} />
-          <Route path="admin/audit-logs" element={<AdminAuditLogsPage />} />
-          <Route path="admin/portal" element={<EnterpriseAdminPortalPage />} />
-          <Route path="admin/enterprise" element={<EnterpriseAdminPortalPage />} />
-        </Route>
-      </Route>
-
-      {/* Direct preview route for Enterprise Admin Portal */}
-      <Route path="admin-portal" element={<EnterpriseAdminPortalPage />} />
-      <Route path="enterprise-portal" element={<EnterpriseAdminPortalPage />} />
-
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* Default Fallback: Redirect to /admin-portal */}
+      <Route path="/" element={<Navigate to="/admin-portal" replace />} />
+      <Route path="*" element={<Navigate to="/admin-portal" replace />} />
     </Routes>
   );
 }

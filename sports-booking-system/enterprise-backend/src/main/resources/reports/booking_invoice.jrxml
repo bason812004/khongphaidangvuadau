@@ -126,18 +126,18 @@
                 <text><![CDATA[Description / Item]]></text>
             </staticText>
             <staticText>
-                <reportElement x="250" y="6" width="70" height="18" textAlignment="Center" uuid="cccccccc-dddd-eeee-ffff-000000000000"/>
-                <textElement><font isBold="true"/> </textElement>
+                <reportElement x="250" y="6" width="70" height="18" uuid="cccccccc-dddd-eeee-ffff-000000000000"/>
+                <textElement textAlignment="Center"><font isBold="true"/> </textElement>
                 <text><![CDATA[Quantity]]></text>
             </staticText>
             <staticText>
-                <reportElement x="330" y="6" width="100" height="18" textAlignment="Right" uuid="dddddddd-eeee-ffff-0000-111111111111"/>
-                <textElement><font isBold="true"/> </textElement>
+                <reportElement x="330" y="6" width="100" height="18" uuid="dddddddd-eeee-ffff-0000-111111111111"/>
+                <textElement textAlignment="Right"><font isBold="true"/> </textElement>
                 <text><![CDATA[Unit Price (VND)]]></text>
             </staticText>
             <staticText>
-                <reportElement x="440" y="6" width="100" height="18" textAlignment="Right" uuid="eeeeeeee-ffff-0000-1111-222222222222"/>
-                <textElement><font isBold="true"/> </textElement>
+                <reportElement x="440" y="6" width="100" height="18" uuid="eeeeeeee-ffff-0000-1111-222222222222"/>
+                <textElement textAlignment="Right"><font isBold="true"/> </textElement>
                 <text><![CDATA[Subtotal (VND)]]></text>
             </staticText>
         </band>
@@ -150,15 +150,18 @@
                 <textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="250" y="4" width="70" height="18" textAlignment="Center" uuid="00000000-1111-2222-3333-444444444444"/>
+                <reportElement x="250" y="4" width="70" height="18" uuid="00000000-1111-2222-3333-444444444444"/>
+                <textElement textAlignment="Center"/>
                 <textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0">
-                <reportElement x="330" y="4" width="100" height="18" textAlignment="Right" uuid="11111111-2222-3333-4444-555555555555"/>
+                <reportElement x="330" y="4" width="100" height="18" uuid="11111111-2222-3333-4444-555555555555"/>
+                <textElement textAlignment="Right"/>
                 <textFieldExpression><![CDATA[$F{unitPrice}]]></textFieldExpression>
             </textField>
             <textField pattern="#,##0">
-                <reportElement x="440" y="4" width="100" height="18" textAlignment="Right" uuid="22222222-3333-4444-5555-666666666666"/>
+                <reportElement x="440" y="4" width="100" height="18" uuid="22222222-3333-4444-5555-666666666666"/>
+                <textElement textAlignment="Right"/>
                 <textFieldExpression><![CDATA[$F{totalPrice}]]></textFieldExpression>
             </textField>
         </band>
@@ -175,7 +178,8 @@
                 <text><![CDATA[Gross Total:]]></text>
             </staticText>
             <textField pattern="#,##0 VND">
-                <reportElement x="440" y="20" width="100" height="20" textAlignment="Right" uuid="55555555-6666-7777-8888-999999999999"/>
+                <reportElement x="440" y="20" width="100" height="20" uuid="55555555-6666-7777-8888-999999999999"/>
+                <textElement textAlignment="Right"/>
                 <textFieldExpression><![CDATA[$P{TOTAL_AMOUNT}]]></textFieldExpression>
             </textField>
             <staticText>
@@ -184,7 +188,8 @@
                 <text><![CDATA[Discount:]]></text>
             </staticText>
             <textField pattern="#,##0 VND">
-                <reportElement x="440" y="45" width="100" height="20" textAlignment="Right" uuid="77777777-8888-9999-0000-111111111111"/>
+                <reportElement x="440" y="45" width="100" height="20" uuid="77777777-8888-9999-0000-111111111111"/>
+                <textElement textAlignment="Right"/>
                 <textFieldExpression><![CDATA[$P{DISCOUNT_AMOUNT}]]></textFieldExpression>
             </textField>
             <staticText>
@@ -207,8 +212,8 @@
                 <textFieldExpression><![CDATA[$P{PAYMENT_METHOD}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="20" y="110" width="515" height="20" forecolor="#64748B" textAlignment="Center" uuid="cccccccc-3333-4444-5555-666666666666"/>
-                <textElement><font size="9" isItalic="true"/> </textElement>
+                <reportElement x="20" y="110" width="515" height="20" forecolor="#64748B" uuid="cccccccc-3333-4444-5555-666666666666"/>
+                <textElement textAlignment="Center"><font size="9" isItalic="true"/> </textElement>
                 <text><![CDATA[Thank you for using Sports Booking System. For inquiries or support, please visit the counter or call 1900-xxxx.]]></text>
             </staticText>
         </band>
