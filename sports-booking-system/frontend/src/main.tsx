@@ -7,6 +7,7 @@ import { App } from "./app/App";
 import { AuthProvider } from "./features/auth/hooks/useAuth";
 import { LanguageProvider } from "./lib/i18n";
 import { queryClient } from "./lib/queryClient";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
