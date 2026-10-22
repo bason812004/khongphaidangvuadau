@@ -1,107 +1,99 @@
-# Sports Booking Enterprise System - Hướng Dẫn Khởi Chạy & Báo Cáo Kỹ Thuật
+# SPORTS BOOKING ENTERPRISE SYSTEM - HƯỚNG DẪN KHỞI CHẠY & KỊCH BẢN DEMO TOÀN DIỆN
 
-> **Dự án Báo Cáo Thực Tập Tốt Nghiệp / Intern Final Project**  
-> **Kiến trúc:** Enterprise Microservices & Monolith Hybrid (Spring Boot 3 + Camunda BPMN 7 + MyBatis + JPA/Hibernate + Keycloak + JasperReports + Kafka + Redis + React 19 / AntD / Tailwind / Bootstrap / SCSS).  
-> **Source Control:** Quản lý mã nguồn chuẩn Git Flow với 2 nhánh cốt lõi `main` (Production) và `develop` (Integration).
-
----
-
-## 1. Ma Trận Công Nghệ Áp Dụng (Technology Stack Matrix)
-
-| Phân Vùng | Yêu Cầu Đề Bài | Công Nghệ Áp Dụng | File Mã Nguồn Đại Diện Trong Dự Án |
-| :--- | :--- | :--- | :--- |
-| **Giao Diện WebApp** | Admin Portal (Kiosk, Booking, Shopping, User, Purchasing, Learning) | React 19, Vite, TypeScript | `frontend/src/pages/admin/EnterpriseAdminPortalPage.tsx` |
-| **Thư Viện CSS** | Bootstrap, TailwindCSS, AntD, Material Design Icons, SCSS | Bootstrap 5, Tailwind 3, AntD 6, `@mui/icons-material`, SASS | `frontend/src/styles/enterprise-admin.scss`, `package.json` |
-| **Quản Lý User** | CRUD User Management | **Spring Data JPA & Hibernate** + Keycloak RBAC | `enterprise-backend/.../controller/UserController.java`, `User.java` |
-| **Quản Lý Danh Mục** | CRUD Category Management | **MyBatis 3** Dynamic SQL (`<where>`, `<if>`, batch delete) | `enterprise-backend/.../mapper/CategoryMapper.xml`, `CategoryController.java` |
-| **Bảo Mật & Auth** | Login, Logout, Register, Hash, Forgot Pass, Keycloak, JWT, Session | BCrypt, JWT (jjwt), HttpSession, LocalStorage, Keycloak OAuth2 | `enterprise-backend/.../controller/AuthController.java`, `SecurityConfig.java` |
-| **Báo Cáo Thống Kê** | Import / Export với Jasper Report Template chuẩn | **JasperReports 6.21**, Apache POI (XLSX, PDF) | `enterprise-backend/.../resources/reports/booking_invoice.jrxml`, `ReportController.java` |
-| **Quy Trình Nghiệp Vụ**| Camunda BPMN Workflow (Maker - Checker, Email Service) | **Camunda BPMN 7.21**, Service Task Delegate, JavaMailSender | `enterprise-backend/.../resources/processes/maker_checker_ticket.bpmn`, `MakerCheckerService.java` |
-| **Message Queue** | Event Streaming | **Apache Kafka** (Event Producer & Consumer) | `enterprise-backend/.../kafka/KafkaEventProducer.java`, `KafkaEventConsumer.java` |
-| **Bộ Nhớ Đệm** | Caching, Blacklist Token, Rate Limit | **Redis 7** (Cache-Aside Pattern) | `enterprise-backend/.../service/RedisCacheService.java` |
-| **Design Patterns** | Các mẫu thiết kế hướng đối tượng | Singleton, Factory, Strategy, Observer, Cache-Aside, Maker-Checker | `enterprise-backend/.../pattern/factory`, `pattern/strategy` |
-| **Source Control** | Quản lý nhánh phiên bản | **Git** (Nhánh `main` và nhánh `develop`) | Quản lý toàn bộ repository |
+> **Dự án Quản Trị Doanh Nghiệp Toàn Diện (Enterprise Admin Portal WebApp)**  
+> **Repository GitHub:** [https://github.com/bason812004/khongphaidangvuadau.git](https://github.com/bason812004/khongphaidangvuadau.git)  
+> **Kiến trúc:** Spring Boot 3 (Java 21) + Camunda BPMN 7 + MyBatis 3 Dynamic SQL + Spring Data JPA / Hibernate + Keycloak OIDC + JasperReports + Apache Kafka + Redis Cache + React 19 (Ant Design, Bootstrap 5, TailwindCSS, SCSS, Material Design Icons).  
+> **Source Control:** Chuẩn Git Flow với 2 nhánh chính `main` (Production/Release) và `develop` (Integration).
 
 ---
 
-## 2. Cấu Trúc Dự Án (Project Structure)
+## 1. MA TRẬN ĐỐI CHIẾU CÔNG NGHỆ 100% THEO ĐỀ BÀI
+
+| STT | Yêu Cầu Của Đề Bài | Công Nghệ Áp Dụng | File Mã Nguồn Đại Diện Trong Dự Án |
+| :---: | :--- | :--- | :--- |
+| **1** | **Build Admin Portal WebApp**<br>*(Kiosk, Booking, Shopping, User Management, Purchasing, Training, Learning...)* | React 19 + TypeScript + Vite | `frontend/src/pages/admin/EnterpriseAdminPortalPage.tsx`<br>Đầy đủ 8 Tab: Kiosk & POS Booking, Shopping & Purchasing Kho, User Management, Category Management, Camunda Workflow, Jasper Reports & Excel, Kafka Stream, Training & Architecture. |
+| **2** | **CSS Library**<br>*(Bootstrap, TailwindCSS, AntD, Material Design Icons, SCSS Styles)* | Ant Design 6, Bootstrap 5, Tailwind 3, `@mui/icons-material`, SCSS SASS | • `antd`: Bảng phân trang, Modal, Tabs, Form, Tag, Statistic<br>• `bootstrap`: Hệ thống lưới `row`, `col`, layout flex utilities<br>• `tailwindcss`: Spacing vi mô, bo góc, bóng mờ<br>• `@mui/icons-material`: Icon chuẩn Material Design<br>• `frontend/src/styles/enterprise-admin.scss`: Mixin Glassmorphism, CSS Variables |
+| **3** | **CRUD Category Management với MyBatis** | **MyBatis 3** Dynamic SQL | • `enterprise-backend/.../mapper/CategoryMapper.xml` (thẻ `<where>`, `<if>`, `<foreach>`, `batchInsert`)<br>• `CategoryMapper.java`, `CategoryServiceImpl.java`, `CategoryController.java` |
+| **4** | **CRUD User Management với JPA, Hibernate** | **Spring Data JPA & Hibernate** | • `UserRepository.java` (kế thừa `JpaRepository`)<br>• `User.java`, `Role.java` (ánh xạ thực thể `@Entity`, `@ManyToMany`)<br>• `UserServiceImpl.java`, `UserController.java` |
+| **5** | **Login/Logout/Register/Hash Password/Forgot Password với Keycloak, JWT, Session, LocalStorage** | Keycloak OIDC, JWT (HS256), HttpSession, LocalStorage, BCrypt | • `AuthController.java`: Login, Logout (Redis Blacklist Token), Register, Forgot Password<br>• `SecurityConfig.java`: Keycloak Resource Server & CORS<br>• `JwtTokenProvider.java`: Ký và xác thực JWT token |
+| **6** | **Import, Export sử dụng Jasper Report (Template chuẩn)** | **JasperReports 6.21** + Apache POI (Excel) | • `resources/reports/booking_invoice.jrxml`: Template hóa đơn PDF chuẩn (Title, Header, Detail, Summary)<br>• `resources/reports/purchasing_inventory_report.jrxml`: Báo cáo kiểm kê kho Excel<br>• `JasperReportService.java` & `ExcelDataImportService.java` |
+| **7** | **Workflow Camunda BPMN (Maker - Checker Ticket & Auto Email)** | **Camunda BPMN 7.21** + JavaMailSender | • `resources/processes/maker_checker_ticket.bpmn`<br>• Maker tạo ticket $\rightarrow$ Checker thẩm định $\rightarrow$ Gateway phân nhánh $\rightarrow$ Delegates cập nhật $\rightarrow$ `SendEmailNotificationDelegate` gửi mail tự động<br>• Camunda Cockpit Web UI trực quan |
+| **8** | **Message Queue / Kafka / Cache & 6 Design Patterns** | **Apache Kafka**, **Redis 7** (Cache-Aside), 6 Design Patterns | • Kafka: `KafkaEventProducer.java`, `KafkaEventConsumer.java`<br>• Redis: `RedisCacheService.java`<br>• 6 Design Patterns: **Strategy** (thanh toán đa cổng), **Factory** (thông báo), **Observer** (Kafka), **Singleton**, **Repository**, **Maker-Checker** |
+| **9** | **Source Control với nhánh `main` và `develop`** | **Git** | 2 nhánh `main` và `develop` trên repository GitHub |
+
+---
+
+## 2. CẤU TRÚC THƯ MỤC DỰ ÁN TINH GỌN
+
+Toàn bộ các thư mục không liên quan (như mobile, ml, backend node cũ) đã được loại bỏ để tập trung 100% vào review Enterprise:
 
 ```text
-sports-booking-system/
-├── enterprise-backend/                     # Backend Enterprise (Java 21 + Spring Boot 3)
-│   ├── src/main/java/com/sportsbooking/enterprise/
-│   │   ├── config/                        # SecurityConfig, DataInitializer, Redis/Kafka Config
-│   │   ├── controller/                    # Auth, User, Category, Workflow, Report Controllers
-│   │   ├── entity/                        # User, Role, Ticket Entities (JPA / Hibernate)
-│   │   ├── model/                         # Category Model (MyBatis)
-│   │   ├── mapper/                        # MyBatis Java Mapper Interfaces
-│   │   ├── repository/                    # Spring Data JPA Repositories
-│   │   ├── service/                       # Business Services (Jasper, Excel, Redis, User)
-│   │   ├── workflow/                      # Camunda BPMN Maker-Checker & Java Delegates
-│   │   ├── pattern/                       # Factory Pattern, Strategy Pattern Contexts
-│   │   └── kafka/                         # Kafka Event Producer & Consumer
-│   ├── src/main/resources/
-│   │   ├── application.yml                # Cấu hình H2/Postgres, Camunda, Kafka, Redis, Mail
-│   │   ├── mapper/CategoryMapper.xml       # MyBatis Dynamic SQL
-│   │   ├── processes/                     # Camunda BPMN XML (maker_checker_ticket.bpmn)
-│   │   └── reports/                       # JasperReports XML Templates (.jrxml)
-│   ├── mvnw.cmd                           # Maven Wrapper tự động
-│   └── pom.xml                            # Quản lý thư viện Maven
-│
-├── frontend/                              # Frontend Portal (React 19 + Vite + TypeScript)
-│   ├── src/
-│   │   ├── pages/admin/EnterpriseAdminPortalPage.tsx  # Cổng Admin Portal Enterprise đầy đủ
-│   │   ├── styles/enterprise-admin.scss   # SCSS Styles kết hợp Glassmorphism
-│   │   ├── routes/AppRoutes.tsx           # Định tuyến (direct route: /admin-portal)
-│   │   └── components/                    # AntD & Bootstrap Components
-│   └── package.json                       # AntD, MUI Icons, Bootstrap, Tailwind, Sass
-│
-├── backend/                               # Backend Node.js / Express (Dịch vụ mở rộng)
-├── database/                              # PostgreSQL / Supabase SQL Schema
-├── docker-compose.enterprise.yml          # Container Postgres, Redis, Kafka, Zookeeper, Keycloak
-├── run_enterprise_backend.bat             # Script 1-click chạy Backend
-├── run_frontend.bat                       # Script 1-click chạy Frontend
-└── run_docker_middleware.bat              # Script 1-click chạy Docker Middleware
+DoAn/
+├── README.md                                    # Hướng dẫn tổng quan & Demo
+└── sports-booking-system/
+    ├── README.md                                # Hướng dẫn chi tiết kỹ thuật
+    ├── docker-compose.enterprise.yml            # Docker: Postgres, Redis, Kafka, Zookeeper, Keycloak
+    ├── run_enterprise_backend.bat               # Script 1 chạm chạy Backend Spring Boot 3
+    ├── run_frontend.bat                         # Script 1 chạm chạy Frontend React Admin Portal
+    ├── run_docker_middleware.bat                # Script 1 chạm chạy Docker Middleware
+    ├── database/                                # CSDL SQL & Dữ liệu hạt giống
+    ├── docs/                                    # Sơ đồ kiến trúc & Tài liệu phỏng vấn
+    │   ├── ENTERPRISE_SYSTEM_DOCUMENTATION.md   # Tài liệu kiến trúc chuyên sâu
+    │   ├── DEMO_VIDEO_GUIDE.md                  # Kịch bản quay video demo
+    │   ├── INTERVIEW_PREPARATION_GUIDE.md       # Cẩm nang trả lời câu hỏi phản biện
+    │   └── diagrams/
+    │       ├── system_architecture.drawio       # Sơ đồ kiến trúc hệ thống
+    │       └── camunda_maker_checker.drawio     # Sơ đồ quy trình Camunda BPMN
+    ├── enterprise-backend/                      # Backend Java 21 + Spring Boot 3
+    │   ├── pom.xml                              # Khai báo: MyBatis, JPA, Camunda, Jasper, Kafka, Redis
+    │   └── src/main/
+    │       ├── java/com/sportsbooking/enterprise/
+    │       │   ├── config/                      # SecurityConfig, DataInitializer (tạo sẵn 4 tài khoản mẫu)
+    │       │   ├── controller/                  # Auth, User, Category, Workflow, Report Controllers
+    │       │   ├── entity/                      # User, Role (JPA / Hibernate)
+    │       │   ├── mapper/                      # CategoryMapper (MyBatis)
+    │       │   ├── repository/                  # UserRepository (Spring Data JPA)
+    │       │   ├── service/                     # CategoryService, UserService, JasperReportService...
+    │       │   ├── workflow/                    # Camunda MakerCheckerService & Java Delegates
+    │       │   ├── kafka/                       # Kafka Event Producer & Consumer
+    │       │   └── pattern/                     # Strategy (Payment), Factory (Notification)
+    │       └── resources/
+    │           ├── application.yml              # Cấu hình H2/Postgres, Camunda, Kafka, Redis
+    │           ├── mapper/CategoryMapper.xml    # Dynamic SQL MyBatis
+    │           ├── processes/                   # maker_checker_ticket.bpmn (Camunda)
+    │           └── reports/                     # booking_invoice.jrxml, purchasing_inventory_report.jrxml
+    └── frontend/                                # Frontend React 19 + TypeScript Admin Portal
+        ├── package.json                         # antd, bootstrap, @mui/icons-material, tailwindcss, sass
+        ├── vite.config.ts                       # Cấu hình Vite Dev Server
+        └── src/
+            ├── pages/
+            │   ├── admin/EnterpriseAdminPortalPage.tsx  # Admin Portal WebApp tập trung đầy đủ
+            │   └── auth/LoginPage.tsx                  # Đăng nhập với 4 tài khoản mẫu nhanh
+            ├── styles/enterprise-admin.scss            # SCSS Mixins Glassmorphism
+            └── routes/AppRoutes.tsx                    # Định tuyến bảo mật vào Admin Portal
 ```
 
 ---
 
-## 3. Hướng Dẫn Khởi Động Dự Án (Quick Start)
+## 3. HƯỚNG DẪN KHỞI CHẠY DỰ ÁN (RUN GUIDE)
 
-Hệ thống được thiết kế **Zero-Configuration Fallback**: Tích hợp sẵn cơ sở dữ liệu In-Memory H2, tài khoản Admin khởi tạo tự động, và Kafka Listener Mock giúp bạn có thể chạy và demo ngay lập tức mà không bắt buộc phải cài đặt Docker hay dịch vụ đám mây phức tạp.
+Hệ thống hỗ trợ chế độ **Zero-Docker Standalone Mode**: Tự động sử dụng CSDL In-Memory H2, khởi tạo sẵn 4 tài khoản mẫu, sẵn sàng chạy ngay trên máy tính mà không bắt buộc phải cài Docker.
 
-### Cách 1: Khởi Chạy 1-Click Bằng File Batch (Khuyên Dùng)
+### Bước 1: Khởi động Backend (Spring Boot 3 - Port 8088)
 
-1. **Khởi động Backend Enterprise:**
-   Nhấp đúp chuột vào file:
-   👉 **`run_enterprise_backend.bat`**  
-   *(Tự động phát hiện Maven, biên dịch và chạy Spring Boot trên cổng **8088**)*.
-
-2. **Khởi động Frontend Portal:**
-   Nhấp đúp chuột vào file:
-   👉 **`run_frontend.bat`**  
-   *(Tự động chạy Vite Dev Server trên cổng **5173**)*.
-
-3. **Truy cập Giao diện Web:**
-   Mở trình duyệt vào địa chỉ: **[http://localhost:5173/admin-portal](http://localhost:5173/admin-portal)**.
-
----
-
-### Cách 2: Khởi Chạy Bằng Dòng Lệnh (Terminal / PowerShell)
-
-#### Bước 1: Chạy Backend (Port 8088)
+Mở cửa sổ Terminal thứ nhất trong IDE hoặc PowerShell và chạy:
 ```powershell
-cd sports-booking-system/enterprise-backend
-.\mvnw.cmd spring-boot:run
+cd sports-booking-system\enterprise-backend
+mvn.cmd spring-boot:run
 ```
-*(Hoặc dùng lệnh `mvn spring-boot:run` nếu máy bạn đã cấu hình biến môi trường Maven).*
+*(Hoặc gõ `.\sports-booking-system\run_enterprise_backend.bat`)*
 
-Khi xuất hiện thông báo sau trên terminal là backend đã sẵn sàng:
+Khi màn hình xuất hiện thông báo sau là Backend đã sẵn sàng:
 ```text
 ===============================================================
 Enterprise Sports Booking Backend Service successfully started!
 Port: 8088 | Context Path: /api
-Camunda Cockpit & Tasklist: http://localhost:8088/camunda
+Camunda Cockpit & Tasklist: http://localhost:8088/api/camunda
 Keycloak / JWT Auth: Active
 MyBatis + JPA/Hibernate Dual ORM: Active
 JasperReports Engine: Active
@@ -109,184 +101,226 @@ Kafka & Redis Cache: Active
 ===============================================================
 ```
 
-#### Bước 2: Chạy Frontend (Port 5173)
+---
+
+### Bước 2: Khởi động Frontend (React Admin Portal - Port 5173)
+
+Mở thêm một cửa sổ Terminal thứ hai (bấm dấu `+` trên thanh Terminal của IDE) và chạy:
 ```powershell
-cd sports-booking-system/frontend
+cd sports-booking-system\frontend
 npm run dev
 ```
-Trình duyệt hiển thị: `http://localhost:5173/`
+*(Hoặc gõ `.\sports-booking-system\run_frontend.bat`)*
 
-#### Bước 3 (Tùy chọn - Khi muốn test Middleware thực tế trên Docker):
-```powershell
-cd sports-booking-system
-docker compose -f docker-compose.enterprise.yml up -d
+Terminal hiển thị:
+```text
+  VITE v6.4.3 ready in 270 ms
+
+  ➜  Local:   http://localhost:5173/
 ```
-*(Khởi động PostgreSQL 5432, Redis 6379, Zookeeper 2181, Kafka 9092, Keycloak 8080).*
 
 ---
 
-## 4. Tài Khoản Mẫu Đăng Nhập (Sample Credentials)
+### Bước 3: Mở Trình Duyệt Web
 
-| Vai trò (Role) | Email Đăng Nhập | Mật khẩu | Phạm vi Phân Quyền |
+1. **Cổng Quản Trị Doanh Nghiệp (Giao diện chính để Review):**  
+   👉 **[http://localhost:5173](http://localhost:5173)**
+2. **Camunda BPMN Cockpit & Tasklist (Quản trị luồng quy trình):**  
+   👉 **[http://localhost:8088/api/camunda](http://localhost:8088/api/camunda)**  
+   *(Tài khoản: `admin` / Mật khẩu: `adminpassword`)*
+3. **Cơ Sở Dữ Liệu H2 Console:**  
+   👉 **[http://localhost:8088/api/h2-console](http://localhost:8088/api/h2-console)**  
+   *(JDBC URL: `jdbc:h2:mem:sports_booking_db` | User: `sa` | Password: để trống)*
+
+---
+
+## 4. TÀI KHOẢN MẪU ĐĂNG NHẬP 1 CHẠM (QUICK LOGIN)
+
+Tại màn hình đăng nhập [http://localhost:5173](http://localhost:5173), hệ thống cung cấp sẵn **4 nút bấm đăng nhập nhanh 1 chạm** theo đúng phân quyền RBAC:
+
+| Nút Đăng Nhập Mẫu | Tài Khoản Email | Mật Khẩu | Vai Trò & Quyền Hạn |
 | :--- | :--- | :--- | :--- |
-| **Super Admin / Checker** | `admin@sportsbooking.com` | `admin123` *(hoặc `123456`)* | Toàn quyền kiểm trị, Checker duyệt Ticket Camunda, Quản lý User/Category |
-| **Đối tác Sân (Partner)** | `partner.danang@sportsbooking.com` | `123456` | Quản lý sân, tạo ticket rút tiền (Maker) |
-| **Thu Ngân (Cashier POS)**| `cashier01@sportsbooking.com` | `123456` | Quầy Kiosk, check-in mã QR, in hóa đơn JasperReports |
-| **Khách Hàng (Customer)** | `customer.long@gmail.com` | `123456` | Đặt chỗ, gửi yêu cầu hoàn tiền |
-| **Camunda Cockpit UI** | `admin` | `adminpassword` | Đăng nhập Camunda Web Admin tại `/camunda` |
+| 👑 **Quản Trị Viên (Admin)** | `admin@sportsbooking.com` | `admin123` | Toàn quyền quản trị, Checker duyệt phiếu Camunda, Quản lý User/Category |
+| 🏟️ **Chủ Sân (Partner)** | `partner@sportsbooking.com` | `partner123` | Đối tác quản lý sân thể thao, Maker gửi ticket yêu cầu rút tiền |
+| 💳 **Thu Ngân (Cashier POS)** | `cashier@sportsbooking.com` | `cashier123` | Quầy Kiosk POS, đặt sân tại chỗ, in hóa đơn PDF JasperReports |
+| 👤 **Khách Hàng (Customer)** | `customer@sportsbooking.com` | `customer123` | Đặt chỗ, gửi yêu cầu phản hồi |
 
 ---
 
-## 5. Kịch Bản Test Chi Tiết Từng Công Nghệ (Testing & Demo Script)
+## 5. KỊCH BẢN DEMO CHI TIẾT TỪNG CÔNG NGHỆ (8 DEMO SCENARIOS)
 
-Dưới đây là 8 bước thao tác thực tế giúp bạn chứng minh trọn vẹn tất cả công nghệ trong buổi báo cáo:
-
-### Kịch Bản 1: Kiểm Tra Giao Diện UI & Kết Hợp Đa Thư Viện CSS
-1. Mở trình duyệt vào **`http://localhost:5173/admin-portal`**.
-2. **Chứng minh kỹ thuật:**
-   - **Ant Design (AntD):** Thanh điều hướng Tabs (`<Tabs>`), Bảng dữ liệu phân trang (`<Table>`), Hộp thoại Popup (`<Modal>`), Biểu mẫu Form kiểm duyệt dữ liệu (`<Form>`, `<Input>`, `<Select>`), Thẻ tag trạng thái (`<Tag>`), Thống kê (`<Statistic>`).
-   - **Material Design Icons:** Hệ thống biểu tượng nghiệp vụ từ `@mui/icons-material` (`PointOfSaleIcon`, `CategoryIcon`, `PictureAsPdfIcon`, `SchoolIcon`, `SecurityIcon`).
-   - **Bootstrap 5:** Bố cục flexbox & grid chuẩn công nghiệp (`d-flex`, `justify-content-between`, `table-bordered`, `alert alert-info`, `alert-success`).
-   - **TailwindCSS:** Đổ bóng thẻ `shadow-sm`, bo góc `rounded-xl`, viền `border`.
-   - **SCSS Styles (`enterprise-admin.scss`):** Kỹ thuật tiền xử lý CSS SASS, sử dụng `@mixin glass-card` đổ bóng kính mờ (Glassmorphism), viền gradient và định dạng thẻ Tech Pill.
+Sau đây là hướng dẫn từng bước để bạn demo thuyết trình trọn vẹn tất cả yêu cầu đề bài cho người chấm / hội đồng:
 
 ---
 
-### Kịch Bản 2: Test User Management (Spring Data JPA & Hibernate)
-1. Trên giao diện Portal, nhấp vào tab **"User Management (JPA)"**.
-2. Bấm nút **"+ Thêm Người Dùng Mới"**:
-   - Nhập: Họ tên: `Nguyen Van Thuan`, Email: `thuan.nguyen@sportsbooking.com`, SĐT: `0908889999`.
-   - Chọn vai trò Keycloak: `ROLE_PARTNER` hoặc `ROLE_CASHIER`.
-   - Bấm **OK** $\rightarrow$ Người dùng mới lập tức được tạo qua Spring Data JPA và hiển thị trên bảng dữ liệu.
-3. **Kiểm tra API Backend qua PowerShell:**
-   ```powershell
-   Invoke-RestMethod -Uri "http://localhost:8088/api/users" -Method Get | ConvertTo-Json -Depth 4
-   ```
-   *Kết quả:* Trả về JSON phân trang, mật khẩu được mã hóa an toàn bằng BCrypt hash (`$2a$10$...`).
+###  Kịch Bản 1: Đăng Nhập, Xác Thực, JWT, Session, LocalStorage & Keycloak IAM
+
+1. **Thao tác Demo:**
+   - Mở trình duyệt vào [http://localhost:5173](http://localhost:5173).
+   - Click nút: **`👑 Quản Trị Viên (Admin)`** $\rightarrow$ Hệ thống lập tức đăng nhập thành công và chuyển vào `/admin-portal`.
+2. **Chứng minh công nghệ cho người chấm:**
+   - **LocalStorage:** Bấm `F12` trên trình duyệt $\rightarrow$ Chọn tab `Application` $\rightarrow$ `Local Storage` $\rightarrow$ Thấy key `auth_token` chứa chuỗi JWT Token và `auth_user` chứa thông tin người dùng.
+   - **JWT Token:** Giải mã token trên `jwt.io` sẽ thấy payload chứa `roles: ["ROLE_ADMIN"]` và thời hạn hết hạn.
+   - **HttpSession:** Tại Backend `AuthController.java`, dòng code `request.getSession(true)` tạo phiên session song song trên máy chủ.
+   - **Mã hóa mật khẩu (BCrypt):** Mở H2 Console (`http://localhost:8088/api/h2-console`) truy vấn bảng `USERS`, trường `PASSWORD` hiển thị chuỗi băm chuẩn `$2a$10$...`.
+   - **Đăng xuất & Redis Blacklist:** Khi bấm nút **Đăng Xuất** ở góc trên Portal, token được lưu vào Redis Blacklist với TTL tương ứng để vô hiệu hóa ngay lập tức.
+   - **Quên mật khẩu (Forgot Password):** Endpoint `POST /api/auth/forgot-password` sinh mã reset tạm thời lưu vào Redis với TTL 30 phút.
 
 ---
 
-### Kịch Bản 3: Test Category Management (MyBatis Dynamic SQL + Redis Cache)
-1. Chuyển sang tab **"Category Management (MyBatis)"**.
-2. Nhập từ khóa vào ô tìm kiếm: `Pickleball` hoặc `Bóng Đá` $\rightarrow$ Chứng minh tính năng Dynamic SQL với thẻ `<where>` và `<if test="name != null">` trong `CategoryMapper.xml`.
-3. Bấm **"+ Thêm Danh Mục"** để thêm môn thể thao mới.
-4. **Chứng minh cơ chế Cache-Aside (Redis):**
-   - Khi đọc dữ liệu: Hệ thống kiểm tra Redis trước, nếu có cache thì trả về dưới 5ms.
-   - Khi thêm/sửa/xóa: Hệ thống tự động xóa cache key tương ứng trong Redis để đảm bảo tính nhất quán (Cache Eviction).
-5. **Kiểm tra API Backend:**
-   ```powershell
-   Invoke-RestMethod -Uri "http://localhost:8088/api/categories" -Method Get | ConvertTo-Json
-   ```
+### 🎨 Kịch Bản 2: Kiểm Tra 5 Thư Viện CSS Trên Admin Portal
+
+1. **Thao tác Demo:**
+   - Quan sát toàn bộ giao diện Cổng Quản Trị Doanh Nghiệp tại [http://localhost:5173](http://localhost:5173).
+2. **Chứng minh công nghệ cho người chấm:**
+   - **Ant Design (`antd`):** Toàn bộ hệ thống thanh Tab (`<Tabs>`), Bảng dữ liệu phân trang (`<Table>`), Hộp thoại Popup thẩm định (`<Modal>`), Biểu mẫu kiểm duyệt (`<Form>`, `<Input>`), Thẻ nhãn trạng thái (`<Tag>`), Khung thống kê chỉ số (`<Statistic>`).
+   - **Bootstrap 5:** Bố cục hệ thống lưới (`container-fluid`, `row`, `col-*`, `d-flex`, `justify-content-between`, `align-items-center`).
+   - **TailwindCSS:** Các lớp vi chỉnh độ thoáng `p-4`, `m-2`, bo góc `rounded-xl`, bóng mờ `shadow-lg`, chế độ hiển thị linh hoạt.
+   - **Material Design Icons (`@mui/icons-material`):** Các biểu tượng chuẩn Google Material (`PointOfSaleIcon`, `CategoryIcon`, `PictureAsPdfIcon`, `SecurityIcon`, `SchoolIcon`, `CloudUploadIcon`).
+   - **SCSS Styles (`enterprise-admin.scss`):** Sử dụng biến màu thương hiệu (`$primary-color`), mixin Glassmorphism mờ kính (`@mixin glass-card`), bo góc và hiệu ứng chuyển động mượt mà khi hover vào các thẻ card.
 
 ---
 
-### Kịch Bản 4: Test Đăng Nhập, Mật Khẩu, JWT, Session, LocalStorage & Keycloak
-1. Xem mã nguồn tại `AuthController.java` và `SecurityConfig.java`.
-2. **Luồng Đăng Nhập (Login):**
-   - Gọi `POST /api/auth/login` với email `admin@sportsbooking.com` và pass `admin123`.
-   - Backend dùng `PasswordEncoder` (BCrypt) đối chiếu mật khẩu.
-   - Khi thành công, tạo **HttpSession** trên máy chủ (`httpRequest.getSession(true)`), đồng thời sinh chuỗi **JWT Access Token** trả về cho Frontend lưu vào **LocalStorage**.
-3. **Luồng Đăng Xuất (Logout & Token Blacklist):**
-   - Khi gọi `POST /api/auth/logout`, Session bị hủy, JWT Token được đưa vào Redis Blacklist với TTL 24 giờ để vô hiệu hóa token ngay lập tức.
-4. **Luồng Quên Mật Khẩu (Forgot Password):**
-   - Gọi `POST /api/auth/forgot-password`: Sinh token khôi phục ngẫu nhiên lưu vào Redis với thời hạn 30 phút (`pwd_reset:{token}`).
+###  Kịch Bản 3: CRUD Category Management với MyBatis Dynamic SQL & Redis Cache
+
+1. **Thao tác Demo:**
+   - Nhấp vào Tab **"Category Management (MyBatis)"**.
+   - Bảng danh mục các môn thể thao (Bóng Đá, Cầu Lông, Pickleball, Tennis) hiển thị kèm nhãn màu tím `ORM: MyBatis XML Dynamic SQL`.
+   - Gõ từ khóa tìm kiếm vào ô `Tìm theo tên danh mục...` (ví dụ: `Pickleball` hoặc `Bóng Đá`).
+   - Bấm nút **"+ Thêm Danh Mục Mới"** $\rightarrow$ Nhập tên, slug, mô tả $\rightarrow$ Bấm Thêm để tạo mới.
+2. **Chứng minh công nghệ cho người chấm:**
+   - Mở file `CategoryMapper.xml` chỉ cho người chấm thấy các thẻ Dynamic SQL:
+     - Thẻ `<select id="searchCategories">` với `<where>`, `<if test="name != null and name != ''">` và `<if test="isActive != null">`.
+     - Thẻ `<insert id="batchInsert">` với vòng lặp `<foreach>` chèn hàng loạt dữ liệu.
+   - **Redis Cache-Aside Pattern:** Mở `CategoryServiceImpl.java`, hệ thống kiểm tra Redis cache qua `redisCacheService.get(cacheKey)` trước; nếu cache miss mới gọi MyBatis và ghi ngược lại Redis với TTL 1 giờ. Khi thêm/sửa/xóa, cache bị xóa (eviction) để đảm bảo đồng nhất.
 
 ---
 
-### Kịch Bản 5: Test JasperReports & Apache POI (Template Chuẩn, In PDF, Xuất/Nhập Excel)
-1. **In Hóa Đơn Đặt Sân Kiosk POS (PDF JasperReports):**
-   - Tại Tab **"Kiosk & Booking POS"** hoặc Tab **"Jasper Reports & Excel"**, bấm nút:
-     👉 **"In Hóa Đơn PDF (JasperReports)"**.
-   - Trình duyệt sẽ mở API xuất file PDF: `http://localhost:8088/api/reports/booking-invoice/INV-20260928/pdf`.
-   - **Cấu trúc Template chuẩn trong file `booking_invoice.jrxml`:**
-     - `Title Band`: Tên thương hiệu hệ thống, Watermark, số hóa đơn `INVOICE_NUMBER`.
-     - `PageHeader Band`: Thông tin khách hàng, số điện thoại, tên sân và khung giờ.
-     - `ColumnHeader & Detail Band`: Danh sách chi tiết tiền sân, thuê dụng cụ, nước giải khát.
-     - `Summary Band`: Tính tổng tiền, trừ voucher giảm giá, số tiền thanh toán thực tế và phương thức POS.
-2. **Xuất Báo Cáo Nhập Kho & Thu Mua (Excel qua Apache POI):**
-   - Tại Tab **"Shopping & Purchasing"**, bấm: 👉 **"Xuất Báo Cáo Kho (JasperReports Excel)"**.
-   - API tải file Excel tự động: `http://localhost:8088/api/reports/inventory/excel`.
-3. **Nhập Hàng Loạt từ Excel (Batch Import):**
-   - Tại Tab **"Jasper Reports & Excel"**, chọn file `.xlsx` bất kỳ để upload $\rightarrow$ Service `ExcelDataImportService` sử dụng Apache POI `XSSFWorkbook` bóc tách từng Cell và insert hàng loạt vào DB.
+### 👥 Kịch Bản 4: CRUD User Management với Spring Data JPA & Hibernate
+
+1. **Thao tác Demo:**
+   - Nhấp vào Tab **"User Management (JPA)"**.
+   - Bảng người dùng hiển thị danh sách tài khoản kèm nhãn màu xanh lá `ORM: Spring Data JPA & Hibernate`.
+   - Bấm nút **"+ Thêm Người Dùng"**:
+     - Nhập họ tên: `Nguyen Van An`
+     - Email: `an.nguyen@sportsbooking.com`
+     - SĐT: `0901234567`
+     - Chọn quyền: `ROLE_PARTNER` hoặc `ROLE_CASHIER`
+     - Bấm **Xác Nhận Thêm** $\rightarrow$ Người dùng mới lập tức được tạo và xuất hiện trên bảng.
+2. **Chứng minh công nghệ cho người chấm:**
+   - Mở file thực thể `User.java` và `Role.java`: Chỉ rõ các annotation JPA `@Entity`, `@Table`, `@Id`, `@GeneratedValue`, và mối quan hệ đa-đa `@ManyToMany` có bảng trung gian `user_roles`.
+   - Mở interface `UserRepository.java`: Kế thừa `JpaRepository<User, Long>` tận dụng toàn bộ các hàm CRUD chuẩn của Spring Data và Hibernate EntityManager.
 
 ---
 
-### Kịch Bản 6: Test Quy Trình Camunda BPMN (Maker - Checker Ticket & Auto Email)
-1. **Quy trình Nghiệp vụ (BPMN Workflow):**
-   - Quá trình quản trị doanh nghiệp áp dụng nguyên tắc **4 Mắt (Maker - Checker)**:
-     - **Maker (Partner / User):** Khởi tạo yêu cầu (Ticket) rút tiền ví hoặc đăng ký sân.
-     - **Camunda Engine:** Khởi tạo Process Instance, sinh ra một `User Task` chờ thẩm định.
-     - **Checker (Admin):** Thẩm định hồ sơ và đưa ra quyết định Duyệt (Approve) hoặc Từ chối (Reject).
-     - **Service Task:** Khi được duyệt, Camunda kích hoạt `ProcessApprovedTicketDelegate`, sau đó gọi `SendEmailNotificationDelegate` gửi email thông báo kết quả tự động cho Maker qua Spring Mail.
-2. **Thao tác Thẩm định trên Portal:**
-   - Tại Tab **"Maker - Checker (Camunda BPMN)"**, chọn một Task đang ở trạng thái `Chờ Checker Duyệt`.
-   - Bấm **"Xem & Phê Duyệt"** $\rightarrow$ Nhập ghi chú đối soát $\rightarrow$ Bấm **Phê Duyệt (Approve)**.
-   - Trạng thái Task lập tức cập nhật thành `Đã Phê Duyệt`.
-3. **Kiểm tra trực tiếp trên Camunda Cockpit:**
-   - Mở trình duyệt vào: **[http://localhost:8088/camunda](http://localhost:8088/camunda)**.
+### 🔄 Kịch Bản 5: Camunda BPMN Workflow (Maker - Checker Ticket & Auto Email)
+
+1. **Thao tác Demo:**
+   - Nhấp vào Tab **"Maker - Checker (Camunda BPMN)"**.
+   - Trên bảng hiển thị danh sách các Task đang ở trạng thái `Chờ Checker Duyệt` (ví dụ: Lệnh rút tiền ví đối tác, Yêu cầu đăng ký cụm sân mới).
+   - Tại cột thao tác, bấm nút 👉 **"Xem & Phê Duyệt"**:
+     - Hộp thoại thẩm định (Review Modal) hiện lên chi tiết số tiền, người gửi (Maker).
+     - Nhập ghi chú đối soát: `Đã đối soát chứng từ hợp lệ, phê duyệt giải ngân.`
+     - Bấm nút xanh **"Phê Duyệt (Approve)"** (hoặc nút đỏ **"Từ Chối (Reject)"**).
+     - Trạng thái Task trên giao diện lập tức chuyển sang nhãn xanh `Đã Phê Duyệt (Approved)`.
+2. **Chứng minh công nghệ trên Camunda Cockpit:**
+   - Mở tab trình duyệt mới vào: **[http://localhost:8088/api/camunda](http://localhost:8088/api/camunda)**.
    - Đăng nhập: Tài khoản: `admin` / Mật khẩu: `adminpassword`.
-   - Vào mục **Cockpit > Processes > makerCheckerTicketProcess**: Xem sơ đồ BPMN trực quan, số lượng process instance đang chạy, heatmap và lịch sử audit.
+   - Vào mục **Cockpit > Processes > makerCheckerTicketProcess**:
+     - Sơ đồ BPMN chuẩn hiển thị trực quan:
+       - **Start Event:** Maker tạo ticket qua API `/api/workflow/tickets`.
+       - **User Task (`Task_CheckerReview`):** Checker nhận nhiệm vụ thẩm định trên Portal.
+       - **Exclusive Gateway (`Gateway_Decision`):** Rẽ nhánh dựa trên biến `${approved}`.
+       - **Service Tasks (`ProcessApprovedTicketDelegate` / `ProcessRejectedTicketDelegate`):** Xử lý nghiệp vụ tương ứng.
+       - **Service Task (`Task_SendMail`):** Kích hoạt `SendEmailNotificationDelegate` tự động gửi email thông báo kết quả cho Maker qua Spring Mail.
 
 ---
 
-### Kịch Bản 7: Test Message Queue (Kafka), Redis Cache & 6 Design Patterns
-1. **Kiểm tra Message Queue (Kafka Event Streaming):**
-   - `KafkaEventProducer.java`: Bắn sự kiện đặt sân lên topic `sports.booking.events` và sự kiện thẩm định lên topic `sports.ticket.events`.
-   - `KafkaEventConsumer.java`: Nhận sự kiện đặt sân theo thời gian thực và kích hoạt xóa cache trạng thái phòng/sân trống trong Redis để tránh xung đột lịch đặt.
+### 📄 Kịch Bản 6: Báo Cáo JasperReports (PDF Chuẩn JRXML) & Apache POI Excel
+
+1. **In Hóa Đơn Đặt Sân Kiosk POS (PDF JasperReports):**
+   - Tại Tab **"Kiosk & Booking POS"** (hoặc Tab **"Jasper Reports & Excel"**), bấm nút:
+     👉 **"In Hóa Đơn PDF (JasperReports)"**.
+   - Trình duyệt sẽ mở trực tiếp file PDF hóa đơn được xuất từ API:
+     `http://localhost:8088/api/reports/booking-invoice/INV-20260928/pdf`
+   - **Cấu trúc template chuẩn trong file `booking_invoice.jrxml`:**
+     - `Title Band`: Logo thương hiệu, số hóa đơn `INVOICE_NUMBER`.
+     - `PageHeader Band`: Thông tin khách hàng, số điện thoại, ngày giờ đặt sân.
+     - `ColumnHeader & Detail Band`: Danh sách chi tiết tiền sân, thuê vợt, nước giải khát.
+     - `Summary Band`: Tổng tiền, giảm giá voucher, tổng thanh toán và chữ ký POS.
+2. **Xuất Báo Cáo Kiểm Kê Kho (Excel):**
+   - Tại Tab **"Shopping & Purchasing Kho"**, bấm nút:
+     👉 **"Xuất Báo Cáo Kho (Excel)"**.
+   - Trình duyệt tự động tải về file Excel báo cáo tồn kho xuất qua JasperReports `JRXlsxExporter`.
+3. **Nhập Hàng Loạt từ Excel (Batch Import):**
+   - Tại Tab **"Jasper Reports & Excel"**, chọn file `.xlsx` bất kỳ để upload $\rightarrow$ Service `ExcelDataImportService` sử dụng Apache POI `XSSFWorkbook` bóc tách từng ô (Cell) và gọi MyBatis `batchInsert` nạp vào database.
+
+---
+
+### ⚡ Kịch Bản 7: Message Queue (Kafka), Cache (Redis) & 6 Design Patterns
+
+1. **Message Queue (Apache Kafka Event Streaming):**
+   - Nhấp vào Tab **"Message Queue & Kafka Stream"**: Xem bảng lịch sử các thông điệp sự kiện được sản xuất (Produce) và tiêu thụ (Consume) theo thời gian thực trên 2 topic `sports.booking.events` và `sports.ticket.events`.
+   - Mở file `KafkaEventProducer.java` (gửi event) và `KafkaEventConsumer.java` (`@KafkaListener` lắng nghe event và kích hoạt xóa cache).
 2. **Chứng minh 6 Design Patterns trong mã nguồn:**
-   - **Singleton Pattern:** Quản trị vòng đời Spring Managed Beans (`@Service`, `@Component`, `@Configuration`).
-   - **Factory Pattern (`pattern/factory`):** `NotificationFactory.java` tạo đối tượng dịch vụ thông báo (`EMAIL`, `SMS`, `PUSH`) theo tham số truyền vào mà không để lộ logic khởi tạo.
-   - **Strategy Pattern (`pattern/strategy`):** Đóng gói linh hoạt các phương thức thanh toán (`VNPayPaymentStrategy`, `CashierPaymentStrategy`, `WalletPaymentStrategy`) thông qua interface `PaymentStrategy` và `PaymentContext`.
-   - **Observer Pattern:** Mô hình Publisher / Subscriber bất đồng bộ qua Kafka Topics.
-   - **Maker - Checker Pattern:** Mẫu kiểm soát 4 mắt bảo mật cao điều phối qua Camunda BPMN.
-   - **Cache-Aside Pattern:** Cơ chế đọc cache trước từ Redis, nếu miss mới query database và set lại cache.
+   - Nhấp vào Tab **"Training, Learning & Architecture"** để xem sơ đồ giải thích:
+     1. **Strategy Pattern (`pattern/strategy`):** Đóng gói thuật toán thanh toán đa cổng linh hoạt (`PaymentStrategy`, `VNPayPaymentStrategy`, `CashierPaymentStrategy`, `WalletPaymentStrategy`) thông qua `PaymentContext`.
+     2. **Factory Pattern (`pattern/factory`):** `NotificationFactory.java` khởi tạo dịch vụ thông báo (`EMAIL`, `SMS`, `PUSH`) theo tham số mà không để lộ logic khởi tạo.
+     3. **Observer Pattern:** Mô hình xuất bản / đăng ký (Pub/Sub) bất đồng bộ qua Kafka Topics và Consumer Listener.
+     4. **Singleton Pattern:** Quản lý vòng đời các Bean dịch vụ Spring Framework (`@Service`, `@Component`).
+     5. **Repository Pattern:** Tách biệt rõ ràng tầng truy xuất dữ liệu (JPA Repositories & MyBatis Mappers) khỏi tầng nghiệp vụ logic.
+     6. **Maker - Checker Pattern:** Mẫu kiểm soát 4 mắt bảo mật cao điều phối qua Camunda BPMN.
 
 ---
 
-### Kịch Bản 8: Kiểm Tra Quản Lý Nhánh Git (Git Branches)
-Mở cửa sổ dòng lệnh tại thư mục gốc dự án và chạy:
-```bash
+### 🌿 Kịch Bản 8: Kiểm Tra Quản Lý Nhánh Git Flow (main & develop)
+
+Mở cửa sổ dòng lệnh tại thư mục dự án và kiểm tra:
+```powershell
 git branch -a
 ```
 *Kết quả hiển thị:*
 ```text
-* develop
-  main
-  feature/admin
-  feature/customer
-  remotes/origin/main
-  remotes/origin/develop
+* main
+  develop
+  remotes/khongphaidangvuadau/main
+  remotes/khongphaidangvuadau/develop
 ```
 Dự án đáp ứng đầy đủ tiêu chí phân nhánh:
-- `main`: Nhánh production ổn định cao.
-- `develop`: Nhánh tích hợp và phát triển liên tục các tính năng Enterprise.
+- **`main`**: Nhánh phát hành ổn định cao, chứa mã nguồn hoàn chỉnh sẵn sàng review.
+- **`develop`**: Nhánh tích hợp và phát triển liên tục các tính năng Enterprise.
+- Trực quan hóa trên GitHub: [https://github.com/bason812004/khongphaidangvuadau/branches](https://github.com/bason812004/khongphaidangvuadau/branches).
 
 ---
 
-## 6. Danh Mục URL & Cổng Dịch Vụ Quan Trọng
+## 6. DANH MỤC URL & CỔNG DỊCH VỤ TRUY CẬP
 
-| Tên Dịch Vụ | Địa Chỉ Truy Cập | Mục Đích Sử Dụng |
-| :--- | :--- | :--- |
-| **Enterprise Admin Portal** | [http://localhost:5173/admin-portal](http://localhost:5173/admin-portal) | Giao diện quản trị toàn diện đầy đủ các module |
-| **Sports Booking Public Web**| [http://localhost:5173](http://localhost:5173) | Trang chủ tìm kiếm và đặt sân công cộng |
-| **Camunda Cockpit & Tasklist**| [http://localhost:8088/camunda](http://localhost:8088/camunda) | Quản lý quy trình BPMN trực quan *(admin / adminpassword)* |
-| **H2 Database Console** | [http://localhost:8088/api/h2-console](http://localhost:8088/api/h2-console) | Quản trị CSDL nhúng *(JDBC URL: `jdbc:h2:mem:sports_booking_db`, User: `sa`, Pass: trống)* |
-| **API In Hóa Đơn PDF** | [http://localhost:8088/api/reports/booking-invoice/INV-20260928/pdf](http://localhost:8088/api/reports/booking-invoice/INV-20260928/pdf) | Tải hóa đơn PDF JasperReports trực tiếp |
-| **API Báo Cáo Kho Excel** | [http://localhost:8088/api/reports/inventory/excel](http://localhost:8088/api/reports/inventory/excel) | Tải báo cáo kiểm kê Excel JasperReports |
-| **API Swagger / OpenAPI (nếu bật)**| [http://localhost:8088/api/swagger-ui.html](http://localhost:8088/api/swagger-ui.html) | Danh mục tra cứu RESTful API |
+| Tên Dịch Vụ | Địa Chỉ Truy Cập | Mục Đích Sử Dụng | Tài Khoản Đăng Nhập |
+| :--- | :--- | :--- | :--- |
+| **Enterprise Admin Portal WebApp** | [http://localhost:5173](http://localhost:5173) | Cổng quản trị tập trung đầy đủ 8 tab chức năng | Click nút **`👑 Quản Trị Viên (Admin)`** |
+| **Camunda Cockpit & Tasklist** | [http://localhost:8088/api/camunda](http://localhost:8088/api/camunda) | Quản lý & trực quan hóa luồng BPMN 4 mắt | `admin` / `adminpassword` |
+| **H2 Database Console** | [http://localhost:8088/api/h2-console](http://localhost:8088/api/h2-console) | Quản trị CSDL nhúng xem bảng SQL trực tiếp | JDBC URL: `jdbc:h2:mem:sports_booking_db` (User: `sa`, Pass: trống) |
+| **API In Hóa Đơn PDF** | [http://localhost:8088/api/reports/booking-invoice/INV-20260928/pdf](http://localhost:8088/api/reports/booking-invoice/INV-20260928/pdf) | Tải hóa đơn PDF JasperReports trực tiếp | Không yêu cầu |
+| **API Báo Cáo Kho Excel** | [http://localhost:8088/api/reports/inventory/excel](http://localhost:8088/api/reports/inventory/excel) | Tải báo cáo kiểm kê kho Excel trực tiếp | Không yêu cầu |
+| **API Danh Mục MyBatis** | [http://localhost:8088/api/categories](http://localhost:8088/api/categories) | Xem JSON danh mục truy vấn qua MyBatis | Không yêu cầu |
 
 ---
 
-## 7. Xử Lý Các Vấn Đề Thường Gặp (Troubleshooting)
+## 7. XỬ LÝ CÁC VẤN ĐỀ THƯỜNG GẶP (TROUBLESHOOTING)
 
-1. **Lệnh `mvn` không nhận diện được:**
-   - Sử dụng file script [run_enterprise_backend.bat](run_enterprise_backend.bat) hoặc dùng lệnh `.\mvnw.cmd spring-boot:run`.
-   - Đường dẫn Maven tích hợp của IntelliJ IDEA trên máy bạn: `C:\Program Files\JetBrains\IntelliJ IDEA 2025.3.2\plugins\maven\lib\maven3\bin`.
-2. **Cổng 8088 hoặc 5173 bị báo trùng (Port already in use):**
-   - Kiểm tra và tắt tiến trình cũ bằng lệnh:
+1. **Trình duyệt báo `HTTP Status 404` khi vào Camunda:**
+   - **Nguyên nhân:** Gõ thiếu tiền tố `/api`.
+   - **Khắc phục:** Hãy gõ đúng link: **`http://localhost:8088/api/camunda`**.
+2. **Cổng 8088 hoặc 5173 bị báo đã được sử dụng (Address already in use):**
+   - Chạy lệnh tìm và tắt tiến trình chiếm cổng:
      ```powershell
      netstat -ano | findstr :8088
      taskkill /PID <MÃ_PID> /F
      ```
-3. **Lỗi kết nối cơ sở dữ liệu:**
-   - Mặc định ứng dụng chạy H2 In-Memory Database không cần cài đặt. Nếu muốn kết nối PostgreSQL Docker, chỉ cần chạy file `run_docker_middleware.bat` và cấu hình biến môi trường `SPRING_DATASOURCE_URL`.
+3. **Lệnh `mvn` không nhận trong PowerShell:**
+   - Trong PowerShell, hãy dùng lệnh có đuôi `.cmd`:
+     ```powershell
+     cd sports-booking-system\enterprise-backend
+     mvn.cmd spring-boot:run
+     ```
+   - Hoặc chạy trực tiếp file [run_enterprise_backend.bat](file:///d:/zz/project/DoAn/sports-booking-system/run_enterprise_backend.bat).
