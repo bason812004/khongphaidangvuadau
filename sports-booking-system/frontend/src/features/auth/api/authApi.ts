@@ -28,5 +28,13 @@ export const authApi = {
     } catch {
       // Backend may be offline or token expired; ignore errors during logout
     }
+  },
+  async forgotPassword(email: string) {
+    const { data } = await api.post<ApiResponse<string>>("/auth/forgot-password", { email });
+    return data;
+  },
+  async resetPassword(token: string, newPassword: string) {
+    const { data } = await api.post<ApiResponse<void>>(`/auth/reset-password?token=${encodeURIComponent(token)}&newPassword=${encodeURIComponent(newPassword)}`);
+    return data;
   }
 };

@@ -159,8 +159,8 @@ Sau đây là hướng dẫn từng bước để bạn demo thuyết trình tr�
    - Mở trình duyệt vào [http://localhost:5173](http://localhost:5173).
    - Click nút: **`👑 Quản Trị Viên (Admin)`** $\rightarrow$ Hệ thống lập tức đăng nhập thành công và chuyển vào `/admin-portal`.
 2. **Chứng minh công nghệ cho người chấm:**
-   - **LocalStorage:** Bấm `F12` trên trình duyệt $\rightarrow$ Chọn tab `Application` $\rightarrow$ `Local Storage` $\rightarrow$ Thấy key `auth_token` chứa chuỗi JWT Token và `auth_user` chứa thông tin người dùng.
-   - **JWT Token:** Giải mã token trên `jwt.io` sẽ thấy payload chứa `roles: ["ROLE_ADMIN"]` và thời hạn hết hạn.
+   - **LocalStorage:** Bấm `F12` trên trình duyệt $\rightarrow$ Chọn tab `Application` $\rightarrow$ `Local Storage` (`http://localhost:5173`) $\rightarrow$ Thấy key `sports_booking_token` (hoặc `auth_token`) chứa chuỗi JWT Token và `sports_booking_user` (hoặc `auth_user`) chứa thông tin người dùng.
+   - **JWT Token:** Copy chuỗi token trong `sports_booking_token`, dán lên trang `jwt.io` sẽ thấy payload chứa `roles: ["ROLE_ADMIN"]` và thời hạn hết hạn.
    - **HttpSession:** Tại Backend `AuthController.java`, dòng code `request.getSession(true)` tạo phiên session song song trên máy chủ.
    - **Mã hóa mật khẩu (BCrypt):** Mở H2 Console (`http://localhost:8088/api/h2-console`) truy vấn bảng `USERS`, trường `PASSWORD` hiển thị chuỗi băm chuẩn `$2a$10$...`.
    - **Đăng xuất & Redis Blacklist:** Khi bấm nút **Đăng Xuất** ở góc trên Portal, token được lưu vào Redis Blacklist với TTL tương ứng để vô hiệu hóa ngay lập tức.

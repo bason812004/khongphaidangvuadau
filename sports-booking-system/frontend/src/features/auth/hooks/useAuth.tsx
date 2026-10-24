@@ -35,6 +35,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       setSession: (nextUser, nextToken) => {
         localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
         localStorage.setItem(TOKEN_KEY, nextToken);
+        localStorage.setItem("auth_user", JSON.stringify(nextUser));
+        localStorage.setItem("auth_token", nextToken);
         setUser(nextUser);
         setToken(nextToken);
       },
@@ -42,6 +44,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
         authApi.logout().catch(() => {});
         localStorage.removeItem(USER_KEY);
         localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem("auth_user");
+        localStorage.removeItem("auth_token");
         setUser(null);
         setToken(null);
         toast.success("Đã đăng xuất thành công!");
