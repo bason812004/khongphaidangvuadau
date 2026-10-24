@@ -115,7 +115,35 @@ interface KafkaEventItem {
 export function EnterpriseAdminPortalPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState("kiosk");
+
+  // Normalize Role (ADMIN, PARTNER, CASHIER, CUSTOMER)
+  const normalizedRole = (
+    user?.role ||
+    (user as any)?.roles?.[0] ||
+    "ROLE_ADMIN"
+  ).toUpperCase().replace(/^ROLE_/, "");
+
+  const getDefaultTabForRole = (role: string) => {
+    switch (role) {
+      case "PARTNER":
+        return "camunda";
+      case "CASHIER":
+        return "kiosk";
+      case "CUSTOMER":
+        return "kiosk";
+      case "ADMIN":
+      default:
+        return "users";
+    }
+  };
+
+  const [activeTab, setActiveTab] = useState<string>(() => getDefaultTabForRole(normalizedRole));
+  // Toggle to show all tabs for presentation/grading purposes
+  const [showAllTabsForGrading, setShowAllTabsForGrading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setActiveTab(getDefaultTabForRole(normalizedRole));
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -825,24 +853,78 @@ export function EnterpriseAdminPortalPage() {
     },
   ];
 
+  // Role-based Tab Permissions (RBAC)
+  const roleTabPermissions: Record<string, string[]> = {
+    ADMIN: ["users", "categories", "camunda", "kiosk", "shopping", "reports", "kafka", "learning"],
+    PARTNER: ["camunda", "reports", "categories", "learning"],
+    CASHIER: ["kiosk", "shopping", "reports", "learning"],
+    CUSTOMER: ["kiosk", "learning"],
+  };
+
+  const allowedTabKeys = (showAllTabsForGrading || normalizedRole === "ADMIN")
+    ? ["users", "categories", "camunda", "kiosk", "shopping", "reports", "kafka", "learning"]
+    : (roleTabPermissions[normalizedRole] || ["kiosk", "learning"]);
+
   return (
     <div className="enterprise-admin-container">
-      {/* 1. Header with System Badges */}
+      {/* 1. Header with System Badges & RBAC Controls */}
       <header className="portal-header d-flex justify-content-between align-items-center">
         <div className="brand-title">
           <SecurityIcon fontSize="large" style={{ color: "#38bdf8" }} />
-          <span>SPORTS BOOKING ENTERPRISE ADMIN PORTAL</span>
+          <span>SPORTS BOOKING ENTERPRISE PORTAL</span>
           <span className="badge-enterprise">Spring Boot 3 + React</span>
         </div>
         <div className="d-flex align-items-center gap-3">
           {user && (
-            <Tag color="blue" style={{ fontSize: "12px", padding: "4px 8px", borderRadius: "6px" }}>
-              👤 {user.fullName || user.email} | Vai trò: <strong>{user.role || (user as any).roles?.[0]?.replace('ROLE_', '') || 'ADMIN'}</strong>
+            <Tag
+              color={
+                normalizedRole === "ADMIN"
+                  ? "red"
+                  : normalizedRole === "PARTNER"
+                  ? "purple"
+                  : normalizedRole === "CASHIER"
+                  ? "green"
+                  : "blue"
+              }
+              style={{ fontSize: "12px", padding: "4px 10px", borderRadius: "6px" }}
+            >
+              👤 {user.fullName || user.email} | Vai trò:{" "}
+              <strong>
+                {normalizedRole === "ADMIN"
+                  ? "Quản Trị Viên (ROLE_ADMIN)"
+                  : normalizedRole === "PARTNER"
+                  ? "Đối Tác Chủ Sân (ROLE_PARTNER)"
+                  : normalizedRole === "CASHIER"
+                  ? "Thu Ngân Quầy (ROLE_CASHIER)"
+                  : "Khách Hàng (ROLE_CUSTOMER)"}
+              </strong>
             </Tag>
           )}
-          <Tag color="cyan">Keycloak SSO: Connected</Tag>
-          <Tag color="green">Apache Kafka: Active (Pub/Sub)</Tag>
-          <Tag color="gold">Redis Cache: Connected (Cache-Aside)</Tag>
+
+          {/* Evaluation / Demo Mode Switch */}
+          <div className="d-flex align-items-center bg-black bg-opacity-25 px-2 py-1 rounded border border-secondary">
+            <Tooltip title="Bật để hiển thị đầy đủ tất cả 8 Tab công nghệ phục vụ thuyết trình / chấm điểm đồ án">
+              <span className="small text-white me-2" style={{ fontSize: "11px" }}>👁️ Chế độ chấm bài:</span>
+              <Switch
+                checked={showAllTabsForGrading}
+                onChange={(checked) => {
+                  setShowAllTabsForGrading(checked);
+                  message.info(
+                    checked
+                      ? "Đã bật chế độ chấm bài: Hiển thị đầy đủ tất cả 8 Tab công nghệ!"
+                      : `Đã kích hoạt lọc phân quyền hiển thị theo vai trò (${normalizedRole})!`
+                  );
+                }}
+                checkedChildren="Hiện tất cả Tab"
+                unCheckedChildren="Lọc theo Role"
+                size="small"
+              />
+            </Tooltip>
+          </div>
+
+          <Tag color="cyan">Keycloak SSO</Tag>
+          <Tag color="green">Apache Kafka</Tag>
+          <Tag color="gold">Redis Cache</Tag>
           <Button
             type="primary"
             danger
@@ -855,10 +937,30 @@ export function EnterpriseAdminPortalPage() {
         </div>
       </header>
 
+      {/* RBAC Notice Banner when non-admin is logged in and not in showAll mode */}
+      {normalizedRole !== "ADMIN" && !showAllTabsForGrading && (
+        <div className="alert alert-info py-2 px-3 mx-4 mt-3 mb-0 d-flex justify-content-between align-items-center shadow-sm">
+          <div>
+            <strong>🛡️ Phân Quyền Vai Trò (Keycloak RBAC):</strong> Bạn đang đăng nhập với vai trò{" "}
+            <Tag color={normalizedRole === "PARTNER" ? "purple" : normalizedRole === "CASHIER" ? "green" : "blue"}>
+              {normalizedRole === "PARTNER"
+                ? "🏟️ ĐỐI TÁC CHỦ SÂN (ROLE_PARTNER)"
+                : normalizedRole === "CASHIER"
+                ? "🛒 THU NGÂN QUẦY (ROLE_CASHIER)"
+                : "👤 KHÁCH HÀNG (ROLE_CUSTOMER)"}
+            </Tag>
+            — Hệ thống tự động mở Tab <strong>{getDefaultTabForRole(normalizedRole).toUpperCase()}</strong> và chỉ hiển thị các tab thuộc phạm vi phân quyền của vai trò này.
+          </div>
+          <Button size="small" type="primary" ghost onClick={() => setShowAllTabsForGrading(true)}>
+            Xem toàn bộ 8 Tab (Chế độ chấm bài)
+          </Button>
+        </div>
+      )}
+
       {/* 2. Main Tabs Navigation */}
       <div className="portal-content">
         <Tabs
-          activeKey={activeTab}
+          activeKey={allowedTabKeys.includes(activeTab) ? activeTab : allowedTabKeys[0]}
           onChange={setActiveTab}
           type="card"
           items={[
@@ -1617,7 +1719,7 @@ export function EnterpriseAdminPortalPage() {
                 </div>
               ),
             },
-          ]}
+          ].filter((tab) => allowedTabKeys.includes(tab.key))}
         />
       </div>
 

@@ -127,7 +127,7 @@ export function LoginPage() {
                 onClick={() => handleQuickLogin("admin@sportsbooking.com", "admin123")}
               >
                 <div className="font-semibold text-blue-700">👑 Quản Trị Viên (Admin)</div>
-                <div className="text-slate-500">admin@sportsbooking.com</div>
+                <div className="text-slate-500 font-mono text-[10px]">Mở toàn quyền 8 Tab quản trị</div>
               </button>
               <button
                 type="button"
@@ -135,7 +135,7 @@ export function LoginPage() {
                 onClick={() => handleQuickLogin("partner@sportsbooking.com", "partner123")}
               >
                 <div className="font-semibold text-green-700">🏟️ Chủ Sân (Partner)</div>
-                <div className="text-slate-500">partner@sportsbooking.com</div>
+                <div className="text-slate-500 font-mono text-[10px]">Mở Maker-Checker BPMN & Báo Cáo</div>
               </button>
               <button
                 type="button"
@@ -143,7 +143,7 @@ export function LoginPage() {
                 onClick={() => handleQuickLogin("cashier@sportsbooking.com", "cashier123")}
               >
                 <div className="font-semibold text-amber-700">💳 Thu Ngân (Cashier POS)</div>
-                <div className="text-slate-500">cashier@sportsbooking.com</div>
+                <div className="text-slate-500 font-mono text-[10px]">Mở Quầy Kiosk POS & Kho Hàng</div>
               </button>
               <button
                 type="button"
@@ -151,7 +151,7 @@ export function LoginPage() {
                 onClick={() => handleQuickLogin("customer@sportsbooking.com", "customer123")}
               >
                 <div className="font-semibold text-purple-700">👤 Khách Hàng (Customer)</div>
-                <div className="text-slate-500">customer@sportsbooking.com</div>
+                <div className="text-slate-500 font-mono text-[10px]">Mở Check-in QR & Đào Tạo LMS</div>
               </button>
             </div>
           </div>
